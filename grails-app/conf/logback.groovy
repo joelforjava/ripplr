@@ -1,5 +1,9 @@
+import ch.qos.logback.core.status.OnConsoleStatusListener
 import grails.util.BuildSettings
 import grails.util.Environment
+
+
+statusListener(OnConsoleStatusListener)
 
 // See http://logback.qos.ch/manual/groovy.html for details on configuration
 appender('STDOUT', ConsoleAppender) {
@@ -8,7 +12,6 @@ appender('STDOUT', ConsoleAppender) {
     }
 }
 
-root(ERROR, ['STDOUT'])
 
 def targetDir = BuildSettings.TARGET_DIR
 if (Environment.isDevelopmentMode() && targetDir) {
@@ -21,3 +24,9 @@ if (Environment.isDevelopmentMode() && targetDir) {
     }
     logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
 }
+
+logger 'grails.app.controllers', DEBUG, ['STDOUT'], false
+logger 'grails.app.services', DEBUG, ['STDOUT'], false
+
+root(ERROR, ['STDOUT'])
+

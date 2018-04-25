@@ -38,3 +38,5 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 	[pattern: '/**',             filters: 'JOINED_FILTERS']
 ]
 
+//elasticSearch.client.mode='local'
+

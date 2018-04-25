@@ -171,4 +171,18 @@ class UserIntegrationSpec extends Specification {
     	
     }
 
+	def "Saving a user and profile at the same time"() {
+		given: "A new user with profile "
+		def gene = new User(username:'gene', passwordHash:'burger', profile: new Profile(fullName:"Full Name", email: "gene@bobsburgers.com"))
+
+		when: "The user is saved"
+		gene.save()
+
+		then: "It saved successfully and can be found in the database"
+
+		gene.errors.errorCount == 0
+		gene.id != 0
+		User.get(gene.id).username == gene.username
+	}
+
 }

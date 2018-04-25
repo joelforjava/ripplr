@@ -26,7 +26,10 @@
 					<h3>${searchResult.total} results found</h3>
 					<g:each status="i" var="result" in="${searchResult.searchResults}">
 						<div class="searchTopic panel panel-default">
-							<div class="searchContent panel-body">${highlights[i].content?.fragments[0]}</div>
+							<div class="searchContent panel-body">${result.content}</div>
+							<g:if test="${highlights && highlights[i]}">
+								<div class="searchContent panel-body">${highlights[i]?.content?.fragments[0]}</div>
+							</g:if>
 							<div class="searchFrom panel-footer">From: <g:link controller="users" action="${result.user.username}">${result.user.username}</g:link></div>
 						</div>
 					</g:each>
