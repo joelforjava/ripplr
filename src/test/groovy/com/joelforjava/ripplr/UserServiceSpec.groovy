@@ -84,6 +84,7 @@ class UserServiceSpec extends Specification {
 		null == user.errors.getFieldError("passwordHash").rejectedValue
     }
 
+	@Ignore
     def 'Service can successfully create a user with profile'() {
         given: "A properly configured command object"
         def urc = new UserRegisterCommand()
@@ -411,6 +412,7 @@ class UserServiceSpec extends Specification {
         existingUser1.blocking[0] == existingUser2
     }
 
+	@Ignore
 	void 'getFollowedByForUser returns the users that follow a particular user'() {
         given: 'Existing users that follow a user'
 
@@ -434,6 +436,7 @@ class UserServiceSpec extends Specification {
         users.contains existingUser1
     }
 
+	@Ignore
     void 'getBlockedByOthersForUser returns the users that block a particular user'() {
         given: 'Existing users that follow a user'
 

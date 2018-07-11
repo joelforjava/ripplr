@@ -11,6 +11,6 @@ classes/
 .settings
 .classpath
 .asscache
-out
+out/
 logs
 icomoon-*

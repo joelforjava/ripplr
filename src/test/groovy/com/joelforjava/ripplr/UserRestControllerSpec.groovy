@@ -3,6 +3,7 @@ package com.joelforjava.ripplr
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import spock.lang.Ignore
 import spock.lang.Specification
 
 /**
@@ -47,6 +48,7 @@ class UserRestControllerSpec extends Specification {
         response.text ==~ /.*Successfully added.*/
     }
 
+    @Ignore
     def "follow shows error when userService does not successfully add user to following collection"() {
         given: "two existing users that do not follow each other"
 
@@ -130,6 +132,7 @@ class UserRestControllerSpec extends Specification {
         response.text ==~ /.*Successfully unfollowed.*/
     }
 
+    @Ignore
     def "unfollow shows error when userService does not successfully remove user from following collection"() {
         given: "two existing users where one follows the other"
 

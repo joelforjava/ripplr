@@ -1,3 +1,5 @@
+package ripplr.grails3
+
 import com.joelforjava.ripplr.*
 
 class BootStrap {

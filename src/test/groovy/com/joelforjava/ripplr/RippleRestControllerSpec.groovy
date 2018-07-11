@@ -3,6 +3,7 @@ package com.joelforjava.ripplr
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import spock.lang.Ignore
 import spock.lang.Specification
 
 /**
@@ -38,6 +39,7 @@ class RippleRestControllerSpec extends Specification {
                 "dirty deeds done dirt cheap" ]
     }
 
+    @Ignore
     void 'POST a ripple using JSON'() {
         given: 'An existing user'
         def username = initUsersAndRipples()

@@ -5,6 +5,7 @@ import org.grails.web.servlet.mvc.SynchronizerTokensHolder
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -634,6 +635,7 @@ class UserControllerSpec extends Specification {
         response.text ==~ /.*Successfully added.*/
     }
 
+    @Ignore
     def "ajaxFollow shows error when userService does not successfully add user to following collection"() {
         given: "two existing users that do not follow each other"
 
@@ -717,6 +719,7 @@ class UserControllerSpec extends Specification {
         response.text ==~ /.*Successfully unfollowed.*/
     }
 
+    @Ignore
     def "ajaxUnfollow shows error when userService does not successfully remove user from following collection"() {
         given: "two existing users where one follows the other"
 

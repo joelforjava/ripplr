@@ -61,6 +61,7 @@ class User implements Serializable {
 	static mapping = {
 		passwordHash column: '`passwordHash`'
 		ripples sort: "dateCreated", order: "desc"
+		autowire true
 	}
 
 	static searchable = {
