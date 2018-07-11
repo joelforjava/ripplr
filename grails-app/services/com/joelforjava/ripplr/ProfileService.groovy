@@ -50,32 +50,6 @@ class ProfileService {
 		profile
 	}
 
-	/**
-	 * @deprecated use UserService.createUserAndProfile instead.
-	 */
-	@Deprecated
-    Profile createProfile(userId, String fullName, String about, String homepage, String email, String twitterProfile,
-    				 String facebookProfile, String timezone, String country, String skin) {
-
-    	// load user first
-    	def user = User.findById(userId)
-
-    	if (user) {
-	    	def profile = new Profile(fullName: fullName, about: about, homepage: homepage, email: email,
-	    							twitterProfile: twitterProfile, facebookProfile: facebookProfile,
-	    							timezone: timezone, country: country, skin: skin)
-	    	user.profile = profile
-	    	// This really should be profile.validate() but it breaks unit tests
-	    	// Need to figure out how to get unit tests to work with profile.validate()
-	    	if (user.validate() && user.save()) {
-	    		return profile
-	    	} else {
-	    		throw new ProfileException(message: 'Invalid profile values', profile: profile)
-	    	}
-    	}
-    	throw new ProfileException(message: 'Invalid User Reference, $userId')
-    }
-
     Profile saveProfile(userId, String fullName, String about, String homepage, String email, String twitterProfile,
     				 String facebookProfile, String timezone, String country, String skin) {
 

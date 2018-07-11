@@ -85,7 +85,9 @@ class UserService {
 
     User createUserAndProfile(UserRegisterCommand userRegistration) {
         def user = createUser(userRegistration.username, userRegistration.password)
-        user.profile = new Profile(userRegistration.profile.properties)
+        // TODO - the user map was added to appease unit tests. Try to refactor in such a way that this hack isn't needed!
+        // NOTE - this works find when the application is running but it's just not necessary
+        user.profile = new Profile(userRegistration.profile.properties + [user: user])
         user.save()
         user
     }

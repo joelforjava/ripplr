@@ -48,7 +48,6 @@ class UserRestControllerSpec extends Specification {
         response.text ==~ /.*Successfully added.*/
     }
 
-    @Ignore
     def "follow shows error when userService does not successfully add user to following collection"() {
         given: "two existing users that do not follow each other"
 
@@ -132,7 +131,6 @@ class UserRestControllerSpec extends Specification {
         response.text ==~ /.*Successfully unfollowed.*/
     }
 
-    @Ignore
     def "unfollow shows error when userService does not successfully remove user from following collection"() {
         given: "two existing users where one follows the other"
 
@@ -219,11 +217,11 @@ class UserRestControllerSpec extends Specification {
     /* ---- helper methods ---- */
     private createUsersForUnfollowingTests(addFollowing) {
         def existingUser = new User(username:'gene', passwordHash:'burger').save(failOnError: true)
-        existingUser.profile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com')
+        existingUser.profile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com', user: existingUser)
         existingUser.save(flush: true)
 
         def userToBeLoggedIn = new User(username:'lana', passwordHash:'testpasswd').save(failOnError: true)
-        userToBeLoggedIn.profile = new Profile(fullName: 'lana kane', email: 'lana@isis.com')
+        userToBeLoggedIn.profile = new Profile(fullName: 'lana kane', email: 'lana@isis.com', user: userToBeLoggedIn)
         if (addFollowing) {
             userToBeLoggedIn.addToFollowing existingUser
         }

@@ -1,21 +1,14 @@
 package com.joelforjava.ripplr
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Ignore
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(UserService)
-@Mock([User, Profile])
-class UserServiceSpec extends Specification {
+class UserServiceSpec extends Specification implements ServiceUnitTest<UserService>, DataTest {
 
-    def setup() {
-    }
-
-    def cleanup() {
+    def setupSpec() {
+		mockDomains(User, Profile)
     }
 
     void 'Valid user data will allow creation of new user'() {
@@ -84,7 +77,6 @@ class UserServiceSpec extends Specification {
 		null == user.errors.getFieldError("passwordHash").rejectedValue
     }
 
-	@Ignore
     def 'Service can successfully create a user with profile'() {
         given: "A properly configured command object"
         def urc = new UserRegisterCommand()
@@ -412,16 +404,16 @@ class UserServiceSpec extends Specification {
         existingUser1.blocking[0] == existingUser2
     }
 
-	@Ignore
+//	@Ignore
 	void 'getFollowedByForUser returns the users that follow a particular user'() {
         given: 'Existing users that follow a user'
 
         def existingUser1 = new User(username:'gene', passwordHash:'burger').save(failOnError: true)
-        existingUser1.profile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com')
+        existingUser1.profile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com', user: existingUser1)
         existingUser1.save(flush: true)
 
         def existingUser2 = new User(username:'lana', passwordHash:'testpasswd').save(failOnError: true)
-        existingUser2.profile = new Profile(fullName: 'lana kane', email: 'lana@isis.com')
+        existingUser2.profile = new Profile(fullName: 'lana kane', email: 'lana@isis.com', user: existingUser2)
         existingUser2.save(flush: true)
 
         existingUser1.addToFollowing existingUser2
@@ -436,16 +428,16 @@ class UserServiceSpec extends Specification {
         users.contains existingUser1
     }
 
-	@Ignore
+//	@Ignore
     void 'getBlockedByOthersForUser returns the users that block a particular user'() {
         given: 'Existing users that follow a user'
 
         def existingUser1 = new User(username:'gene', passwordHash:'burger').save(failOnError: true)
-        existingUser1.profile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com')
+        existingUser1.profile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com', user: existingUser1)
         existingUser1.save(flush: true)
 
         def existingUser2 = new User(username:'lana', passwordHash:'testpasswd').save(failOnError: true)
-        existingUser2.profile = new Profile(fullName: 'lana kane', email: 'lana@isis.com')
+        existingUser2.profile = new Profile(fullName: 'lana kane', email: 'lana@isis.com', user: existingUser2)
         existingUser2.save(flush: true)
 
         existingUser1.addToBlocking existingUser2

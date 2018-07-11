@@ -12,6 +12,7 @@ import spock.lang.Unroll
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
+// TODO: DO NOT UPDATE to the Testing Support Framework until you figure out WTF you get the 'is not a domain' error on the command objects!
 @TestFor(UserController)
 @Mock([User, UserRole, Profile])
 class UserControllerSpec extends Specification {
@@ -166,13 +167,8 @@ class UserControllerSpec extends Specification {
 
         and: "a mock user service"
         def mockUserService = Mock(UserService)
-        0 * mockUserService.createUser(_, _)
+        0 * mockUserService.createUserAndProfile(_)
         controller.userService = mockUserService
-
-        and: "a mock profile service"
-        def mockProfileService = Mock(ProfileService)
-        0 * mockProfileService.createProfile(_, _, _, _, _, _, _, _, _, _,)
-        controller.profileService = mockProfileService
 
         when: "the new register action is invoked"
         controller.register urc
@@ -635,7 +631,6 @@ class UserControllerSpec extends Specification {
         response.text ==~ /.*Successfully added.*/
     }
 
-    @Ignore
     def "ajaxFollow shows error when userService does not successfully add user to following collection"() {
         given: "two existing users that do not follow each other"
 
@@ -719,7 +714,6 @@ class UserControllerSpec extends Specification {
         response.text ==~ /.*Successfully unfollowed.*/
     }
 
-    @Ignore
     def "ajaxUnfollow shows error when userService does not successfully remove user from following collection"() {
         given: "two existing users where one follows the other"
 
@@ -806,11 +800,11 @@ class UserControllerSpec extends Specification {
     /* ---- helper methods ---- */
     private def createUsersForUnfollowingTests(addFollowing) {
         def existingUser = new User(username:'gene', passwordHash:'burger').save(failOnError: true)
-        existingUser.profile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com')
+        existingUser.profile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com', user: existingUser)
         existingUser.save(flush: true)
 
         def userToBeLoggedIn = new User(username:'lana', passwordHash:'testpasswd').save(failOnError: true)
-        userToBeLoggedIn.profile = new Profile(fullName: 'lana kane', email: 'lana@isis.com')
+        userToBeLoggedIn.profile = new Profile(fullName: 'lana kane', email: 'lana@isis.com', user: userToBeLoggedIn)
         if (addFollowing) {
             userToBeLoggedIn.addToFollowing existingUser
         }
@@ -819,5 +813,8 @@ class UserControllerSpec extends Specification {
         [existingUser, userToBeLoggedIn]
     }
 
+//    private def mockCommandObject(Class clazz) {
+//        clazz.newInstance()
+//    }
 
 }

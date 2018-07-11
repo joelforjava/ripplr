@@ -1,16 +1,10 @@
 package com.joelforjava.ripplr
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
-import spock.lang.Ignore
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(ProfileService)
-@Mock([User, Profile])
-class ProfileServiceSpec extends Specification {
+class ProfileServiceSpec extends Specification implements ServiceUnitTest<ProfileService>, DataTest {
 
 	def user
 
@@ -18,60 +12,14 @@ class ProfileServiceSpec extends Specification {
     	user = new User(username: "Sterling", passwordHash: "HashedPasswd").save(flush: true)
     }
 
-
-    @Ignore
-    def "Valid profile data will allow creation of profile"() {
-    	given: "Valid profile values"
-    	String fullName = "Sterling Mallory Archer"
-    	String email = "duchess@isis.com"
-
-    	and: "Empty strings for optional values"
-		String about = ""
-		String homepage = ""
-		String twitterProfile = ""
-		String facebookProfile = ""
-		String timezone = ""
-		String country = ""
-		String skin = ""
-
-    	when: "We attempt to create a new profile"
-
-    	def profile = service.createProfile(user.id, fullName, about, homepage, 
-                                email, twitterProfile, facebookProfile, timezone, country, skin)
-
-    	then: "The profile is returned by the service"
-
-    	Profile.count() == old(Profile.count()) + 1
-    	profile.fullName == fullName
-    	profile.email == email
+    def setupSpec() {
+        mockDomains(User, Profile)
     }
 
-    def "Attempting to create a profile with invalid profile parameters will cause an error"() {
-        when: "We call the service with invalid parameters"
-
-        service.createProfile(user.id, "", "", "", "", "", "", "", "", "")
-
-        then: "An exception is thrown"
-
-        thrown ProfileException
-    }
-
-    def "Attempting to create a profile with an invalid user ID will cause an error"() {
-        when: "We call the service with an invalid user ID"
-
-        service.createProfile(-1, "Sterling Archer", "Undercover agent for ISIS", "archer.com", 
-                    "archer@isis.com", "twitter.com/archer", "facebook.com/archer", "", "", "")
-
-        then: "An exception is thrown"
-
-        thrown ProfileException
-    }
-
-    @Ignore
     def "Profile properties can be updated via save method"() {
         given: "An existing profile"
 
-        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com")
+        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com", user: user)
         user.profile = existingProfile
         user.save(flush: true, failOnError: true)
 
@@ -113,11 +61,10 @@ class ProfileServiceSpec extends Specification {
         thrown ProfileException
     }
 
-    @Ignore
     def "Service can retrieve profile of a user with a valid user ID"() {
         given: "An existing profile for a user"
 
-        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com")
+        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com", user: user)
         user.profile = existingProfile
         user.save(flush: true)
 
@@ -141,11 +88,10 @@ class ProfileServiceSpec extends Specification {
         thrown ProfileException
     }
 
-    @Ignore
     def "Service can retrieve profile of a user with a valid username"() {
         given: "An existing profile for a user"
 
-        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com")
+        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com", user: user)
         user.profile = existingProfile
         user.save(flush: true)
 
