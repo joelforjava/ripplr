@@ -1,6 +1,7 @@
 package com.joelforjava.ripplr
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
+
 
 class RippleException extends RuntimeException {
 	String message

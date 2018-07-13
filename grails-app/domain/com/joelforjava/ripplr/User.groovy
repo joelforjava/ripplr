@@ -61,6 +61,8 @@ class User implements Serializable {
 	static mapping = {
 		passwordHash column: '`passwordHash`'
 		ripples sort: "dateCreated", order: "desc"
+		following joinTable: [name: 'user_user_following']
+        blocking joinTable:  [name: 'user_user_blocking']
 		autowire true
 	}
 

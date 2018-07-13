@@ -25,8 +25,7 @@ if (Environment.isDevelopmentMode() && targetDir) {
     logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
 }
 
-logger 'grails.app.controllers', DEBUG, ['STDOUT'], false
-logger 'grails.app.services', DEBUG, ['STDOUT'], false
+logger 'com.joelforjava.ripplr', DEBUG, ['STDOUT'], false
 
 root(ERROR, ['STDOUT'])
 

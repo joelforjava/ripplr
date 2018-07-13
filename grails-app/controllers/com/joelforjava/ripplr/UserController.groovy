@@ -1,10 +1,14 @@
 package com.joelforjava.ripplr
 
+import grails.plugin.springsecurity.SpringSecurityService
+import groovy.util.logging.Slf4j
+
+@Slf4j
 class UserController {
 
-    def profileService
-	def springSecurityService
-    def userService
+    ProfileService profileService
+	SpringSecurityService springSecurityService
+    UserService userService
 
     def index() {
         redirect(action:'dashboard', controller:'ripple', params: params)
@@ -58,14 +62,14 @@ class UserController {
                 def user = userService.createUserAndProfile(urc)
                 if (user.hasErrors()) {
                     render view: "registration", model: [ user : user ]
-//                    return [ user : user ]
-                } else {
-                    flash.message = "Welcome aboard!"
-                    redirect uri: "/"
+                    return
                 }
+
+                flash.message = "Welcome aboard!"
+                redirect uri: "/"
         	}
         }.invalidToken {
-            render "Invalid or duplicate form submission"
+            invalidToken()
         }
     }
 
@@ -106,7 +110,7 @@ class UserController {
                 }
         	}
     	}.invalidToken {
-    		render "Invalid or duplicate form submission"
+            invalidToken()
     	}
     }
 
@@ -197,6 +201,10 @@ class UserController {
             }
         }
 
+    }
+
+    protected void invalidToken() {
+        render 'Invalid or duplicate form submission'
     }
 
 }

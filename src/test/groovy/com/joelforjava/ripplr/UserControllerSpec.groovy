@@ -15,7 +15,7 @@ import spock.lang.Unroll
 // TODO: DO NOT UPDATE to the Testing Support Framework until you figure out WTF you get the 'is not a domain' error on the command objects!
 @TestFor(UserController)
 @Mock([User, UserRole, Profile])
-class UserControllerSpec extends Specification {
+class UserControllerSpec extends Specification implements DomainDataFactory {
 
     /* --- Register Specs --- */
 
@@ -131,10 +131,9 @@ class UserControllerSpec extends Specification {
     	urc.validate()
 
         and: "a mock user service"
-        def mockUserService = Mock(UserService)
-        1 * mockUserService.createUserAndProfile(*_) >> new User(username:"mocked", passwordHash:"hashmocked",
-                                                                 profile: new Profile(fullName:"Mocked Name", email:"mock@mocking.com"))
-        controller.userService = mockUserService
+        controller.userService = Mock(UserService) {
+            1 * createUserAndProfile(*_) >> validUserAndProfile()
+        }
 
     	and: "we have the form token set"
         def tokenHolder = SynchronizerTokensHolder.store(session)

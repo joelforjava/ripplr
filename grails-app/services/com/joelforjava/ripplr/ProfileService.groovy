@@ -1,6 +1,7 @@
 package com.joelforjava.ripplr
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
+
 
 class ProfileException extends RuntimeException {
 	String message
@@ -17,7 +18,7 @@ class ProfileService {
      * @return the user profile
      * @throws ProfileException if no profile is found.
      */
-	Profile retrieveProfile(userId) {
+	Profile retrieveProfile(Long userId) {
 
 		def profile = Profile.where {
 			user.id == userId

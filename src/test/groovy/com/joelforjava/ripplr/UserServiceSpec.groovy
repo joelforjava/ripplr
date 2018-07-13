@@ -59,9 +59,9 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
 
 		then: "The user is returned by the service with security defaults of false"
 
-		newUser.accountExpired == false
-		newUser.accountLocked == false
-		newUser.passwordExpired == false
+        !newUser.accountExpired
+        !newUser.accountLocked
+        !newUser.passwordExpired
 
     }
 
