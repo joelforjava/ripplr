@@ -1,5 +1,8 @@
 package com.joelforjava.ripplr
 
+/**
+ * Custom Date Taglib used to display dates in various forms.
+ */
 class DateTagLib {
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]

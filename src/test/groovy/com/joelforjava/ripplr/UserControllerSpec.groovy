@@ -232,9 +232,9 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         controller.userService = mockUserService
 
         and: "a mock profile service"
-        def mockProfileService = Mock(ProfileService)
-        1 * mockProfileService.saveProfile(_, _, _, _, _, _, _, _, _, _) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
-        controller.profileService = mockProfileService
+        controller.profileService = Mock(ProfileService) {
+            1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
+        }
 
     	and: "we have the form token set"
         def tokenHolder = SynchronizerTokensHolder.store(session)
@@ -281,9 +281,9 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         controller.userService = mockUserService
 
         and: "a mock profile service"
-        def mockProfileService = Mock(ProfileService)
-        1 * mockProfileService.saveProfile(_, _, _, _, _, _, _, _, _, _) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
-        controller.profileService = mockProfileService
+        controller.profileService = Mock(ProfileService) {
+            1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
+        }
 
         and: "we have the form token set"
         def tokenHolder = SynchronizerTokensHolder.store(session)
@@ -329,9 +329,9 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         controller.userService = mockUserService
 
         and: "a mock profile service"
-        def mockProfileService = Mock(ProfileService)
-        1 * mockProfileService.saveProfile(_, _, _, _, _, _, _, _, _, _) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
-        controller.profileService = mockProfileService
+        controller.profileService = Mock(ProfileService) {
+            1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
+        }
 
         and: "we have the form token set"
         def tokenHolder = SynchronizerTokensHolder.store(session)
@@ -423,9 +423,9 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         controller.userService = mockUserService
 
         and: "a mock profile service"
-        def mockProfileService = Mock(ProfileService)
-        0 * mockProfileService.saveProfile(_, _, _, _, _, _, _, _, _, _)
-        controller.profileService = mockProfileService
+        controller.profileService = Mock(ProfileService) {
+            0 * updateProfile(*_)
+        }
 
         and: "we have the form token set"
         def tokenHolder = SynchronizerTokensHolder.store(session)

@@ -16,7 +16,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         mockDomains(User, Profile)
     }
 
-    def "Profile properties can be updated via save method"() {
+    def 'Updating profile properties via updateProfile method'() {
         given: "An existing profile"
 
         def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com", user: user)
@@ -24,9 +24,11 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         user.save(flush: true, failOnError: true)
 
         when: "We attempt to change values"
-
-        def savedProfile = service.saveProfile(user.id, "Sterling Archer", "Undercover agent for ISIS", "http://archer.com", 
-                                    "duchess@isis.com", "http://twitter.com/archer", "http://facebook.com/archer", "", "", "")
+        def savedProfile = service.updateProfile(user.id,
+                                        new ProfileCommand(fullName: "Sterling Archer",
+                                                about: "Undercover agent for ISIS", homepage: "http://archer.com",
+                                                email: "duchess@isis.com", twitterProfile: "http://twitter.com/archer",
+                                                facebookProfile: "http://facebook.com/archer"))
 
         then: "The profile values are updated"
 
@@ -38,27 +40,40 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     }
 
-    def "If the profile cannot be found during a save then an error is thrown"() {
+    def 'Updating a profile when no profile exists results in receiving a null object'() {
+        when: "We attempt to update a profile that doesn't exist"
+        def profile = service.updateProfile(user.id, new ProfileCommand())
 
-        when: "We attempt to save a profile that doesn't exist"
-
-        def savedProfile = service.saveProfile(user.id, "Sterling Archer", "Undercover agent for ISIS", "http://archer.com", 
-                                    "duchess@isis.com", "http://twitter.com/archer", "http://facebook.com/archer", "", "", "")
-
-        then: "An exception is thrown"
-
-        thrown ProfileException
+        then: 'The response is null'
+        !profile
     }
 
-    def "Attempting to update a profile with invalid values results in an error"() {
-        when: "We call the service with an invalid user ID"
+    def 'Updating the profile of an invalid userId will result in a null object being returned'() {
+        when: 'We attempt to update a profile for a user ID that does not exist'
+        def profile = service.updateProfile(-42L, new ProfileCommand())
 
-        service.saveProfile(user.id, "Sterling Archer", "Undercover agent for ISIS", "archer.com", 
-                    "archer@isis.com", "twitter.com/archer", "facebook.com/archer", "", "", "")
+        then: 'The response is null'
+        !profile
+    }
 
-        then: "An exception is thrown"
+    def 'Attempting to update a profile with invalid values will prevent the domain object from being saved and we will have errors'() {
+        given: "An existing profile"
 
-        thrown ProfileException
+        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com", user: user)
+        user.profile = existingProfile
+        user.save(flush: true, failOnError: true)
+
+        when: "We attempt to change values"
+        def savedProfile = service.updateProfile(user.id,
+                                        new ProfileCommand(fullName: "Sterling Archer",
+                                                about: "Undercover agent for ISIS", homepage: "http://archer.com",
+                                                email: "duchessisis.com", twitterProfile: "http://twitter.com/archer",
+                                                facebookProfile: "http://facebook.com/archer"))
+
+        then: 'The profile comes back with errors'
+        existingProfile.errors.allErrors.size() == 1
+        existingProfile.errors.getFieldError('email').code == 'email.invalid'
+
     }
 
     def "Service can retrieve profile of a user with a valid user ID"() {

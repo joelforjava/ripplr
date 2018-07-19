@@ -68,8 +68,8 @@ class UserService {
         users
     }
 
-    User createUser(String username, String passwordHash, boolean accountLocked, boolean accountExpired,
-    			 boolean passwordExpired) {
+    User createUser(String username, String passwordHash, boolean accountLocked = false, boolean accountExpired = false,
+    			 boolean passwordExpired = false) {
 
         // TODO-generate hashed password here and save it
         // remove encryption logic from the User domain class!
@@ -80,14 +80,10 @@ class UserService {
         user
     }
 
-    User createUser(String username, String passwordHash) {
-    	this.createUser(username, passwordHash, false, false, false)
-    }
-
     User createUserAndProfile(UserRegisterCommand userRegistration) {
         def user = createUser(userRegistration.username, userRegistration.password)
         // TODO - the user map was added to appease unit tests. Try to refactor in such a way that this hack isn't needed!
-        // NOTE - this works find when the application is running but it's just not necessary
+        // NOTE - this works fine when the application is running but it's just not necessary
         user.profile = new Profile(userRegistration.profile.properties + [user: user])
         user.save()
         user
@@ -172,7 +168,7 @@ class UserService {
             def success = user.save()
             return success
         } else {
-            throw new UserException("Either requested user to block is invalid or that user is equal to the user requesting to block", user: user)
+            throw new UserException(message: "Either requested user to block is invalid or that user is equal to the user requesting to block", user: user)
         }
         return false
     }

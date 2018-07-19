@@ -87,9 +87,8 @@ class UserController {
         	if (uuc.hasErrors()) {
         		render view: "update", model: [ user : uuc ]
         	} else {
-
+                // TODO - make this the first route to remove exceptions, if possible
                 def user
-
                 try {
                     user = userService.retrieveUser(uuc.username)
                     if (uuc.passwordDirty) {
@@ -99,12 +98,9 @@ class UserController {
                     } // otherwise, no need to save user
                       // admin page will be used for locking/expiring accounts
 
-                    profileService.saveProfile(user.id, uuc.profile.fullName, uuc.profile.about, uuc.profile.homepage,
-                                            uuc.profile.email, uuc.profile.twitterProfile, uuc.profile.facebookProfile,
-                                            uuc.profile.timezone, uuc.profile.country, uuc.profile.skin)
+                    profileService.updateProfile(user.id, uuc.profile, true)
                     flash.message = "Changes Saved."
                     redirect uri: "/"   // Maybe go back to 'update'?
-
                 } catch (ue) {
                     return [ user : user , error : ue ]
                 }

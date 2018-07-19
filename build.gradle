@@ -19,7 +19,7 @@ apply plugin:"war"
 apply plugin:"org.grails.grails-web"
 apply plugin:"org.grails.grails-gsp"
 apply plugin:"asset-pipeline"
-//apply plugin: "codenarc"
+apply plugin: "codenarc"
 apply plugin: "jacoco"
 
 def elasticsearchVersion = '5.4.1'
@@ -128,13 +128,14 @@ jacocoTestReport {
 
 jacocoTestReport.dependsOn test, integrationTest
 
-/*
 codenarc {
-    toolVersion = "0.25.2"
+    toolVersion = "1.1"
     reportsDir = file("${reporting.baseDir}/build")
+    configFile = file("config/codenarc/codenarc.groovy")
+    ignoreFailures = true
 }
+/*
 codenarcMain {
-    configFile = file("src/test/config/codenarc/codenarc.groovy")
 }
 codenarcIntegrationTest {
     configFile = file("src/test/config/codenarc/codenarcIntegrationTest.groovy")
