@@ -85,7 +85,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         when: "We attempt to retrieve the profile with the user ID"
 
-        def retrievedProfile = service.retrieveProfile(user.id)
+        def retrievedProfile = service.findProfile(user.id)
 
         then: "We recieve the profile from the service"
 
@@ -96,11 +96,11 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def "Attempting to retrieve a user's profile that doesn't exist with the user's ID results in an error"() {
         when: "We attempt to retrieve a profile for a user with no profile using the user ID"
 
-        service.retrieveProfile(user.id)
+        def profile = service.findProfile(user.id)
 
-        then: "An exception is thrown"
+        then: 'We get a null object'
 
-        thrown ProfileException
+        !profile
     }
 
     def "Service can retrieve profile of a user with a valid username"() {
@@ -112,7 +112,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         when: "We attempt to retrieve the profile with the username"
 
-        def retrievedProfile = service.retrieveProfile(user.username)
+        def retrievedProfile = service.findProfile(user.username)
 
         then: "We recieve the profile from the service"
 
@@ -123,10 +123,10 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def "Attempting to retrieve a user's profile that doesn't exist with the username results in an error"() {
         when: "We attempt to retrieve a profile for a user with no profile using the username"
 
-        service.retrieveProfile(user.username)
+        def profile = service.findProfile(user.username)
 
-        then: "An exception is thrown"
+        then: 'We get a null object'
 
-        thrown ProfileException
+        !profile
     }
 }

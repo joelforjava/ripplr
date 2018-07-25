@@ -165,9 +165,9 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
     	urc.validate()
 
         and: "a mock user service"
-        def mockUserService = Mock(UserService)
-        0 * mockUserService.createUserAndProfile(_)
-        controller.userService = mockUserService
+        controller.userService = Mock(UserService) {
+            0 * createUserAndProfile(_)
+        }
 
         when: "the new register action is invoked"
         controller.register urc
@@ -203,10 +203,8 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
     def "Updating user and profile via update action with command object"() {
     	given: "An existing user with an existing profile"
-    	def existingUser = new User(username:'gene', passwordHash:'burger').save(failOnError: true)
-        def existingProfile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com')
-        existingUser.profile = existingProfile
-        existingUser.save(flush: true)
+    	def existingUser = new User(username:'gene', passwordHash:'burger',
+                profile: new Profile(fullName: 'gene belcher', email: 'gene@bobs.com'))
 
     	and: "A property configured command object"
     	def urc = mockCommandObject UserUpdateCommand
@@ -225,11 +223,10 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
     	urc.validate()
 
         and: "a mock user service"
-        def mockUserService = Mock(UserService) {
-            1 * retrieveUser(_) >> existingUser
+        controller.userService = Mock(UserService) {
+            1 * findUser(_) >> existingUser
             1 * saveUser(_, _, _) >> new User(username: urc.username, passwordHash: urc.password)
         }
-        controller.userService = mockUserService
 
         and: "a mock profile service"
         controller.profileService = Mock(ProfileService) {
@@ -252,10 +249,8 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
     def "Updating username via update action with command object"() {
         given: "An existing user with an existing profile"
-        def existingUser = new User(username:'lisaturtle', passwordHash:'burger').save(failOnError: true)
-        def existingProfile = new Profile(fullName: 'screech powers', email: 'screech@sanchez.com')
-        existingUser.profile = existingProfile
-        existingUser.save(flush: true)
+        def existingUser = new User(username:'lisaturtle', passwordHash:'burger',
+                profile: new Profile(fullName: 'screech powers', email: 'screech@sanchez.com'))
 
         and: "A property configured command object"
         def urc = mockCommandObject UserUpdateCommand
@@ -274,11 +269,10 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         urc.validate()
 
         and: "a mock user service"
-        def mockUserService = Mock(UserService) {
-            1 * retrieveUser(_) >> existingUser
+        controller.userService = Mock(UserService) {
+            1 * findUser(_) >> existingUser
             1 * updateUsername(_, _) >> new User(username: urc.username, passwordHash: existingUser.passwordHash)
         }
-        controller.userService = mockUserService
 
         and: "a mock profile service"
         controller.profileService = Mock(ProfileService) {
@@ -324,7 +318,7 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
         and: "a mock user service"
         def mockUserService = Mock(UserService) {
-            1 * retrieveUser(_) >> existingUser
+            1 * findUser(_) >> existingUser
         }
         controller.userService = mockUserService
 
@@ -417,10 +411,9 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         urc.validate()
 
         and: "a mock user service that throws an exception during user retrieval"
-        def mockUserService = Mock(UserService) {
-            1 * retrieveUser(_) >> { throw new UserException(message: 'exception') }
+        controller.userService = Mock(UserService) {
+            1 * findUser(_) >> { throw new UserException(message: 'exception') }
         }
-        controller.userService = mockUserService
 
         and: "a mock profile service"
         controller.profileService = Mock(ProfileService) {
@@ -479,10 +472,9 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         existingUser.save(flush: true)
 
         and: "a mock user service"
-        def mockUserService = Mock(UserService) {
-            1 * retrieveUser(_) >> existingUser
+        controller.userService = Mock(UserService) {
+            1 * findUser(_) >> existingUser
         }
-        controller.userService = mockUserService
 
         and: "a mock security service"
         controller.springSecurityService = Mock(SpringSecurityService) {
@@ -512,11 +504,9 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         def loggedInUser = new User(username:'sterling', passwordHash:'duchess').save(failOnError: true)
 
         and: "a mock user service"
-        def mockUserService = Mock(UserService) {
-            1 * retrieveUser(_) >> existingUser
+        controller.userService = Mock(UserService) {
+            1 * findUser(_) >> existingUser
         }
-        controller.userService = mockUserService
-
 
         and: "a mock security service"
         controller.springSecurityService = Mock(SpringSecurityService) {
@@ -536,47 +526,70 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
     }
 
-    def "profile action responds with error when profile is requested for a user that is blocking logged-in user"() {
-        given: "two users where the first user blocks the second"
-        def user1 = new User(username:'linda', passwordHash:'burger').save(failOnError: true)
-        user1.profile = new Profile(fullName:'linda belcher', email:'linda@burgers.com')
-        user1.save()
-        def user2 = new User(username:'lindaimpersonator', passwordHash:'catfish').save(failOnError: true)
-        user2.profile = new Profile(fullName:'linda belcher', email:'linda@catfish.com')
-        user2.save(flush: true)
-        user1.addToBlocking user2
-        user1.save(flush: true)
+    def 'profile action sets loggedInIsFollowing appropriately when a profile is being followed by the viewer'() {
+        given: 'an existing user with profile'
+        def existingUser = new User(username:'gene', passwordHash:'burger',
+                profile: new Profile(fullName: 'gene belcher', email: 'gene@bobs.com'))
 
-        and: "a mock user service"
+        and: 'a logged in user that follows the existing user'
+        def loggedInUser = new User(username:'sterling', passwordHash:'duchess')
+        loggedInUser.addToFollowing existingUser
+
+        and: 'a mock user service'
         controller.userService = Mock(UserService) {
-            1 * retrieveUser(user1.username) >> user1
+            1 * findUser(_) >> existingUser
+            1 * getFollowedByForUser(_) >> [loggedInUser]
         }
 
-        and: "a mock security service"
+        and: 'a mock security service'
+        controller.springSecurityService = Mock(SpringSecurityService) {
+            1 * isLoggedIn() >> true
+            1 * getCurrentUser() >> loggedInUser
+        }
+
+        when: 'the profile action is called'
+        def results = controller.profile 'gene'
+
+        then: 'We see isLoggedInFollowing set correctly'
+        results.loggedInIsFollowing
+
+    }
+
+    def 'profile action responds with error when profile is requested for a user that is blocking logged-in user'() {
+        given: 'two users where the first user blocks the second'
+        def user1 = new User(username:'linda', passwordHash:'burger',
+                profile: new Profile(fullName:'linda belcher', email:'linda@burgers.com'))
+        def user2 = new User(username:'lindaimpersonator', passwordHash:'catfish',
+                profile: new Profile(fullName:'linda belcher', email:'linda@catfish.com'))
+        user1.addToBlocking user2
+
+        and: 'a mock user service'
+        controller.userService = Mock(UserService) {
+            1 * findUser(user1.username) >> user1
+        }
+
+        and: 'a mock security service where the blocked user is logged in'
         controller.springSecurityService = Mock(SpringSecurityService) {
             1 * isLoggedIn() >> true
             1 * getCurrentUser() >> user2
         }
 
-        when: "the profile action is called"
-
+        when: 'the profile action is called'
         def model = controller.profile 'linda'
 
-        then: "we receive a 404 error"
+        then: 'we receive a 404 error'
         response.status == 404
         model == [] // currently returns empty list until I refactor
     }
 
     def "profile action sends error when user service returns null"() {
         given: "a mock user service that returns null"
-        def mockUserService = Mock(UserService) {
-            1 * retrieveUser(_) >> null
+        controller.userService = Mock(UserService) {
+            1 * findUser(_) >> null
         }
-        controller.userService = mockUserService
 
         when: "we call profile action with invalid username"
 
-        // name irrelevant since service is set up to return null
         controller.profile 'not_a_real_name'
 
         then: "we receive an error in the response"
@@ -586,14 +599,12 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
     def "profile action sends error when user not found"() {
         given: "a mock user service that returns null"
-        def mockUserService = Mock(UserService) {
-            1 * retrieveUser(_) >> { throw new UserException(message: 'exception!') }
+        controller.userService = Mock(UserService) {
+            1 * findUser(_) >> { throw new UserException(message: 'exception!') }
         }
-        controller.userService = mockUserService
 
         when: "we call profile action with invalid username"
 
-        // name irrelevant since service is set up to return null
         controller.profile 'not_a_real_name'
 
         then: "we receive an error in the response"
@@ -612,15 +623,14 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         def userToBeLoggedIn = users[1]
 
         and: "a mocked user service to show success"
-        def mockUserService = Mock(UserService) {
+        controller.userService = Mock(UserService) {
             1 * addToFollowing(_, _) >> true
         }
-        controller.userService = mockUserService
 
         and: "a mocked security service"
-        def mockSecurityService = Stub(SpringSecurityService.class)
-        mockSecurityService.currentUser >> userToBeLoggedIn
-        controller.springSecurityService = mockSecurityService
+        controller.springSecurityService = Stub(SpringSecurityService.class) {
+            getCurrentUser() >> userToBeLoggedIn
+        }
 
         when: "we call ajaxFollow action"
 
@@ -639,15 +649,14 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         def userToBeLoggedIn = users[1]
 
         and: "a mocked user service to show failure"
-        def mockUserService = Mock(UserService) {
+        controller.userService = Mock(UserService) {
             1 * addToFollowing(_, _) >> false
         }
-        controller.userService = mockUserService
 
         and: "a mocked security service"
-        def mockSecurityService = Stub(SpringSecurityService.class)
-        mockSecurityService.currentUser >> userToBeLoggedIn
-        controller.springSecurityService = mockSecurityService
+        controller.springSecurityService = Stub(SpringSecurityService.class) {
+            getCurrentUser() >> userToBeLoggedIn
+        }
 
         when: "we call ajaxFollow action"
 
@@ -666,15 +675,14 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         def userToBeLoggedIn = users[1]
 
         and: "a mocked user service to throw an exception"
-        def mockUserService = Mock(UserService) {
+        controller.userService = Mock(UserService) {
             1 * addToFollowing(_, _) >> { throw new UserException(message: 'exception!') }
         }
-        controller.userService = mockUserService
 
         and: "a mocked security service"
-        def mockSecurityService = Stub(SpringSecurityService.class)
-        mockSecurityService.currentUser >> userToBeLoggedIn
-        controller.springSecurityService = mockSecurityService
+        controller.springSecurityService = Stub(SpringSecurityService.class) {
+            getCurrentUser() >> userToBeLoggedIn
+        }
 
         when: "we call ajaxFollow action"
 
@@ -695,15 +703,14 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         def userToBeLoggedIn = users[1]
 
         and: "a mocked user service to show success"
-        def mockUserService = Mock(UserService) {
+        controller.userService = Mock(UserService) {
             1 * removeFromFollowing(_, _) >> true
         }
-        controller.userService = mockUserService
 
         and: "a mocked security service"
-        def mockSecurityService = Stub(SpringSecurityService.class)
-        mockSecurityService.currentUser >> userToBeLoggedIn
-        controller.springSecurityService = mockSecurityService
+        controller.springSecurityService = Stub(SpringSecurityService.class) {
+            getCurrentUser() >> userToBeLoggedIn
+        }
 
         when: "we call ajaxUnfollow action"
 
@@ -722,15 +729,14 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         def userToBeLoggedIn = users[1]
 
         and: "a mocked user service to show failure"
-        def mockUserService = Mock(UserService) {
+        controller.userService = Mock(UserService) {
             1 * removeFromFollowing(_, _) >> false
         }
-        controller.userService = mockUserService
 
         and: "a mocked security service"
-        def mockSecurityService = Stub(SpringSecurityService.class)
-        mockSecurityService.currentUser >> userToBeLoggedIn
-        controller.springSecurityService = mockSecurityService
+        controller.springSecurityService = Stub(SpringSecurityService.class) {
+            getCurrentUser() >> userToBeLoggedIn
+        }
 
         when: "we call ajaxUnfollow action"
 
@@ -749,15 +755,14 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         def userToBeLoggedIn = users[1]
 
         and: "a mocked user service to throw an exception"
-        def mockUserService = Mock(UserService) {
+        controller.userService = Mock(UserService) {
             1 * removeFromFollowing(_, _) >> { throw new UserException(message: 'exception!') }
         }
-        controller.userService = mockUserService
 
         and: "a mocked security service"
-        def mockSecurityService = Stub(SpringSecurityService.class)
-        mockSecurityService.currentUser >> userToBeLoggedIn
-        controller.springSecurityService = mockSecurityService
+        controller.springSecurityService = Stub(SpringSecurityService.class) {
+            getCurrentUser() >> userToBeLoggedIn
+        }
 
         when: "we call ajaxUnfollow action"
 
@@ -778,15 +783,14 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         def userToBeLoggedIn = users[1]
 
         and: "a mocked user service to show success"
-        def mockUserService = Mock(UserService) {
+        controller.userService = Mock(UserService) {
             1 * addToBlocking(_, _) >> true
         }
-        controller.userService = mockUserService
 
         and: "a mocked security service"
-        def mockSecurityService = Stub(SpringSecurityService.class)
-        mockSecurityService.currentUser >> userToBeLoggedIn
-        controller.springSecurityService = mockSecurityService
+        controller.springSecurityService = Stub(SpringSecurityService.class) {
+            getCurrentUser() >> userToBeLoggedIn
+        }
 
         when: "we call ajaxBlock action"
 
@@ -798,16 +802,15 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
     /* ---- helper methods ---- */
     private def createUsersForUnfollowingTests(addFollowing) {
-        def existingUser = new User(username:'gene', passwordHash:'burger').save(failOnError: true)
-        existingUser.profile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com', user: existingUser)
-        existingUser.save(flush: true)
+        def existingUser = new User(username:'gene', passwordHash:'burger',
+                profile: new Profile(fullName: 'gene belcher', email: 'gene@bobs.com'))
 
-        def userToBeLoggedIn = new User(username:'lana', passwordHash:'testpasswd').save(failOnError: true)
-        userToBeLoggedIn.profile = new Profile(fullName: 'lana kane', email: 'lana@isis.com', user: userToBeLoggedIn)
+        def userToBeLoggedIn = new User(username:'lana', passwordHash:'testpasswd',
+                profile: new Profile(fullName: 'lana kane', email: 'lana@isis.com'))
+
         if (addFollowing) {
             userToBeLoggedIn.addToFollowing existingUser
         }
-        userToBeLoggedIn.save(flush: true)
 
         [existingUser, userToBeLoggedIn]
     }

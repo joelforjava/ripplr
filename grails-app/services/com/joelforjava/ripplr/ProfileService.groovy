@@ -2,15 +2,6 @@ package com.joelforjava.ripplr
 
 import grails.gorm.transactions.Transactional
 
-
-/**
- * Exception thrown by the ProfileService when an exception occurs.
- */
-class ProfileException extends RuntimeException {
-	String message
-	Profile profile
-}
-
 /**
  * This is the main service for working with Profiles.
  */
@@ -22,40 +13,22 @@ class ProfileService {
      *
      * @param userId - The unique User ID
      * @return the user profile
-     * @throws ProfileException if no profile is found.
      */
-	Profile retrieveProfile(Long userId) {
-
-		def profile = Profile.where {
-			user.id == userId
-		}.get()
-
-		if(!profile) {
-			throw new ProfileException(message:"Invalid user ID provided")
-		}
-
-		profile
-	}
+    Profile findProfile(Long userId) {
+        Profile.read(userId)
+    }
 
     /**
-     * Retrieve a User Profile belonging to a user with a given username.
+     * Find a User Profile belonging to a user with a given username.
      *
      * @param username - The user's unique user name.
      * @return the user profile
-     * @throws ProfileException if no profile is found
      */
-	Profile retrieveProfile(String username) {
-
-		def profile = Profile.where {
-			user.username == username
-		}.get()
-
-		if(!profile) {
-			throw new ProfileException(message:"Invalid username provided")
-		}
-
-		profile
-	}
+    Profile findProfile(String username) {
+        Profile.where {
+            user.username == username
+        }.get()
+    }
 
     /**
      * Update an existing User Profile.

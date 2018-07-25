@@ -24,7 +24,7 @@ class RippleController {
 
     def timeline(String id) {
     	// change to try/catch since service throws exceptions
-    	def user = userService.retrieveUser id
+    	def user = userService.findUser id
 
     	if (!user) {
     		response.sendError 404

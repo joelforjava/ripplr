@@ -16,17 +16,10 @@ class UserService {
      * Retrieve a user via unique ID.
      *
      * @param id - the user ID as assigned by the database.
-     * @return the retrieved user.
-     * @throws UserException if user is not found
+     * @return the retrieved user, if found. Otherwise, null.
      */
-    User retrieveUser(Long id) {
-        def user = User.get(id)
-
-        if (!user) {
-            throw new UserException(message: "User not found ($id)")
-        }
-
-        user
+    User findUser(Long id) {
+        User.read(id)
     }
 
     /**
@@ -36,14 +29,8 @@ class UserService {
      * @return the retrieved user.
      * @throws UserException if user is not found
      */
-    User retrieveUser(String username) {
-        def user = User.findByUsername(username)
-
-        if (!user) {
-            throw new UserException(message: "User not found ($username)")
-        }
-
-        user
+    User findUser(String username) {
+        User.findByUsername(username)
     }
 
     /**
@@ -89,10 +76,14 @@ class UserService {
         user
     }
 
-    User saveUser(userId, String username, String passwordHash, boolean accountLocked, boolean accountExpired,
-                 boolean passwordExpired) {
+    User saveUser(Long userId, String username, String passwordHash, boolean accountLocked = false,
+                  boolean accountExpired = false, boolean passwordExpired = false) {
 
-        def user = retrieveUser userId
+        def user = findUser userId
+
+        if (!user) {
+            return user
+        }
 
         user.passwordHash = passwordHash
         user.accountLocked = accountLocked
@@ -104,12 +95,12 @@ class UserService {
         user
     }
 
-    User saveUser(userId, String username, String passwordHash) {
-        this.saveUser(userId, username, passwordHash, false, false, false)
-    }
-
     User updateUsername(userId, String username) {
-        def user = retrieveUser userId
+        def user = findUser userId
+
+        if (!user) {
+            return user
+        }
 
         user.username = username
         user.save()
@@ -174,7 +165,7 @@ class UserService {
     }
 
     def getFollowedByForUser(String username) {
-        def user = retrieveUser username
+        def user = findUser username
         if (user) {
             def query = User.where {
                 following*.username == username
@@ -186,7 +177,7 @@ class UserService {
     }
 
     def getBlockedByOthersForUser(String username) {
-        def user = retrieveUser username
+        def user = findUser username
         if (user) {
             def query = User.where {
                 blocking*.username == username

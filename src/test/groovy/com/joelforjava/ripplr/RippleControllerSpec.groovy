@@ -67,7 +67,7 @@ class RippleControllerSpec extends Specification {
 
     	and: "a mocked user service"
     	controller.userService = Mock(UserService) {
-    		1 * retrieveUser(_) >> user
+    		1 * findUser(_) >> user
     	}
 
     	when: "we invoke timeline action"
@@ -85,7 +85,7 @@ class RippleControllerSpec extends Specification {
 
     	and: "a mocked user service"
     	controller.userService = Mock(UserService) {
-    		1 * retrieveUser(_) >> null
+    		1 * findUser(_) >> null
     	}
 
     	when: "the timeline action is invoked"

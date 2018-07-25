@@ -133,22 +133,22 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
 		User.count() == old(User.count())
     }
 
-    def "Calling save on a user that does not exist results in error"() {
+    def "Calling save on a user that does not exist results in null objects returned"() {
     	when: "We attempt to save a user that was not first created"
 
-    	service.saveUser(null, "jason", "passwordhasheddude", false, false, false)
+    	def result = service.saveUser(null, "jason", "passwordhasheddude", false, false, false)
 
-    	then: "An exception is thrown"
+    	then: "we have a null object"
 
-    	thrown UserException
+    	!result
 
     	when: "We attempt to save a user that was not first created via alternate save"
 
-    	service.saveUser(null, "Jason", "hashedpassword")
+    	result = service.saveUser(null, "Jason", "hashedpassword")
 
-    	then: "An exception is thrown"
+    	then: "we have a null object"
 
-    	thrown UserException
+    	!result
     }
 
     def 'Saving an existing user with an invalid passwordHash value results in an error'() {
@@ -191,7 +191,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
 
     	when: "We attempt to retrieve the user via the service"
 
-    	def retrievedUser = service.retrieveUser(user.id)
+    	def retrievedUser = service.findUser(user.id)
 
     	then: "We have a valid user object to work with"
 
@@ -199,14 +199,14 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
     	retrievedUser.username == user.username
     }
 
-    def "Attempting to retrieve user with invalid ID causes an error"() {
+    def "Attempting to retrieve user with invalid ID results in a null object"() {
     	when: "An attempt is made to retrieve an invalid user"
 
-    	service.retrieveUser(-1)
+    	def result = service.findUser(-1)
 
-    	then: "An exception is thrown"
+    	then: "We receive a null object"
 
-    	thrown UserException
+    	!result
     }
 
     def "Service can retrieve a user with a valid username"() {
@@ -216,7 +216,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
 
     	when: "We attempt to retrieve the user via the service"
 
-    	def retrievedUser = service.retrieveUser(user.username)
+    	def retrievedUser = service.findUser(user.username)
 
     	then: "We have a valid user object to work with"
 
@@ -227,11 +227,10 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
     def "Attempting to retrieve user with an invalid username causes an error"() {
     	when: "An attempt is made to retrieve a user with an invalid username"
 
-    	service.retrieveUser("Jambalaya")
+    	def result = service.findUser("Jambalaya")
 
-    	then: "An exception is thrown"
-
-    	thrown UserException
+    	then: "We get a null object"
+		!result
     }
 
     def "Service can retrieve a list of the latest users"() {

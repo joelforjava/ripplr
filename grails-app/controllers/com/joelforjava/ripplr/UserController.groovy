@@ -20,29 +20,29 @@ class UserController {
     def profile(String id) {
 
         try {
-            def currentUser;
-            def user = userService.retrieveUser(id)
-            boolean isLoggedInFollowing = false
-            if (user) {
-                if (springSecurityService.isLoggedIn()) {
-                    log.debug "A user is logged in"
-                    currentUser = springSecurityService.currentUser
-                    log.debug "The current user is ${currentUser.username}"
-                    if (user.blocking?.contains(currentUser)) {
-                        log.debug "${user.username} is blocking ${currentUser.username}"
-                        response.sendError 404
-                        return [] // prevent from 'falling through' to the return with profile data
-                    }
-                    if (currentUser.following?.contains(user)) {
-                        isLoggedInFollowing = true
-                    }
-                }
-                log.debug "Finished dealing with logged-in scenario"
-                def followedBy = userService.getFollowedByForUser user.username
-                return [profile: user.profile, followedBy: followedBy, currentLoggedInUser: currentUser, loggedInIsFollowing: isLoggedInFollowing]
-            } else {
+            def user = userService.findUser(id)
+            if (!user) {
                 response.sendError 404
+                return
             }
+            def currentUser
+            boolean isLoggedInFollowing = false
+            if (springSecurityService.isLoggedIn()) {
+                log.debug "A user is logged in"
+                currentUser = springSecurityService.currentUser
+                log.debug "The current user is ${currentUser.username}"
+                if (user.blocking?.contains(currentUser)) {
+                    log.debug "${user.username} is blocking ${currentUser.username}"
+                    response.sendError 404
+                    return [] // prevent from 'falling through' to the return with profile data
+                }
+                if (currentUser.following?.contains(user)) {
+                    isLoggedInFollowing = true
+                }
+            }
+            log.debug "Finished dealing with logged-in scenario"
+            def followedBy = userService.getFollowedByForUser user.username
+            return [profile: user.profile, followedBy: followedBy, currentLoggedInUser: currentUser, loggedInIsFollowing: isLoggedInFollowing]
         } catch (ue) {
             response.sendError 404   
         }
@@ -77,34 +77,33 @@ class UserController {
     	def user = springSecurityService.currentUser
     	if (!user) {
     		response.sendError 404
-    	} else {
-    		[ user : user ]
+            return
     	}
+        [ user : user ]
     }
 
     def updateProfile(UserUpdateCommand uuc) {
     	withForm {
         	if (uuc.hasErrors()) {
         		render view: "update", model: [ user : uuc ]
-        	} else {
-                // TODO - make this the first route to remove exceptions, if possible
-                def user
-                try {
-                    user = userService.retrieveUser(uuc.username)
-                    if (uuc.passwordDirty) {
-                       user = userService.saveUser(user.id, uuc.username, uuc.password)
-                    } else if (uuc.usernameDirty) {
-                        userService.updateUsername(user.id, uuc.username)
-                    } // otherwise, no need to save user
-                      // admin page will be used for locking/expiring accounts
-
-                    profileService.updateProfile(user.id, uuc.profile, true)
-                    flash.message = "Changes Saved."
-                    redirect uri: "/"   // Maybe go back to 'update'?
-                } catch (ue) {
-                    return [ user : user , error : ue ]
-                }
+                return
         	}
+            // TODO - make this the first route to remove exceptions, if possible
+            def user = userService.findUser(uuc.username)
+            try {
+                if (uuc.passwordDirty) {
+                    user = userService.saveUser(user.id, uuc.username, uuc.password)
+                } else if (uuc.usernameDirty) {
+                    userService.updateUsername(user.id, uuc.username)
+                } // otherwise, no need to save user
+                // admin page will be used for locking/expiring accounts
+
+                profileService.updateProfile(user.id, uuc.profile, true)
+                flash.message = "Changes Saved."
+                redirect uri: "/"   // Maybe go back to 'update'?
+            } catch (ue) {
+                return [ user : user , error : ue ]
+            }
     	}.invalidToken {
             invalidToken()
     	}
