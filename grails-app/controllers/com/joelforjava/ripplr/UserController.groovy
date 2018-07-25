@@ -90,20 +90,16 @@ class UserController {
         	}
             // TODO - make this the first route to remove exceptions, if possible
             def user = userService.findUser(uuc.username)
-            try {
-                if (uuc.passwordDirty) {
-                    user = userService.saveUser(user.id, uuc.username, uuc.password)
-                } else if (uuc.usernameDirty) {
-                    userService.updateUsername(user.id, uuc.username)
-                } // otherwise, no need to save user
-                // admin page will be used for locking/expiring accounts
+            if (uuc.passwordDirty) {
+                user = userService.saveUser(user.id, uuc.username, uuc.password)
+            } else if (uuc.usernameDirty) {
+                userService.updateUsername(user.id, uuc.username)
+            } // otherwise, no need to save user
+            // admin page will be used for locking/expiring accounts
 
-                profileService.updateProfile(user.id, uuc.profile, true)
-                flash.message = "Changes Saved."
-                redirect uri: "/"   // Maybe go back to 'update'?
-            } catch (ue) {
-                return [ user : user , error : ue ]
-            }
+            profileService.updateProfile(user.id, uuc.profile, true)
+            flash.message = "Changes Saved."
+            redirect uri: "/"   // Maybe go back to 'update'?
     	}.invalidToken {
             invalidToken()
     	}

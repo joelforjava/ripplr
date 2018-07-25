@@ -387,53 +387,6 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
     }
 
-    def "when user service throws exception during user retrieval for profile update an error occurs"() {
-        given: "An existing user with an existing profile"
-        def existingUser = new User(username:'louisebelcher', passwordHash:'burger').save(failOnError: true)
-        def existingProfile = new Profile(fullName: 'screech powers', email: 'lou@bobs.com')
-        existingUser.profile = existingProfile
-        existingUser.save(flush: true)
-
-        and: "A property configured command object"
-        def urc = mockCommandObject UserUpdateCommand
-        urc.with {
-            username = existingUser.username
-            password = "burger"
-            passwordVerify = "burger"
-            profile = mockCommandObject ProfileCommand
-            profile.fullName = "Louise Belcher"
-            profile.email = "louise@genesburgers.com"
-            passwordDirty = false
-            usernameDirty = false
-        }
-
-        and: "it has been validated"
-        urc.validate()
-
-        and: "a mock user service that throws an exception during user retrieval"
-        controller.userService = Mock(UserService) {
-            1 * findUser(_) >> { throw new UserException(message: 'exception') }
-        }
-
-        and: "a mock profile service"
-        controller.profileService = Mock(ProfileService) {
-            0 * updateProfile(*_)
-        }
-
-        and: "we have the form token set"
-        def tokenHolder = SynchronizerTokensHolder.store(session)
-        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
-        params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
-
-        when: "the new update action is invoked"
-        def model = controller.updateProfile urc
-
-        then: "we receive an error in the response map"
-
-        model.error.message == 'exception' // set above
-        
-    }
-
     def "calling update action on a logged in user returns a user's details in command object"() {
         given: "an existing user with a profile"
         def user = new User(username:'louise', passwordHash:'pinkhat').save(failOnError: true)
@@ -456,8 +409,6 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         model.user.profile.fullName == user.profile.fullName
         model.user.profile.email == user.profile.email
         model.user.username == user.username
-
-
     }
 
     /* --- Profile Specs --- */
