@@ -184,6 +184,67 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
 		'' == savedUser.errors.getFieldError('username').rejectedValue
     }
 
+	def 'Updating user with a command object when the password has been changed'() {
+        given: 'An existing user'
+        def user = new User(username:"gene", passwordHash:"hamburgerhamburger").save(failOnError: true)
+
+        and: 'A command object denoting that the password has been changed'
+        def cmd = new UserUpdateCommand()
+        cmd.with {
+            username = user.username
+            password = 'mynewpasswordisgreat'
+            passwordDirty = true
+        }
+
+        when: 'We call updateUser'
+        def updatedUser = service.updateUser(cmd)
+
+        then: 'We get the updated user'
+        updatedUser.username == user.username
+        user.passwordHash != old(user.passwordHash)
+    }
+
+    @Ignore("This can't really work! The system currently looks up a user by username! So, either add a 'newUsername' field or look up by ID!")
+    def 'Updating user with command object when the username has been changed'() {
+        given: 'an existing user'
+        def user = new User(username: 'ralph', passwordHash: 'hashedpassword').save(failOnError: true, flush: true)
+
+        and: 'A command object denoting that the password has been changed'
+        def cmd = new UserUpdateCommand()
+        cmd.with {
+            username = 'ralph_malph'
+            usernameDirty = true
+        }
+
+        when: 'we call updateUser'
+        def updatedUser = service.updateUser cmd
+
+        then: 'the username property is updated'
+        user.id == updatedUser.id
+        user.username != old(user.username)
+    }
+
+    def 'Calling updateUser without any dirty flags set results in receiving the original user object'() {
+        given: 'An existing user'
+        def user = new User(username:"gene", passwordHash:"hamburgerhamburger").save(failOnError: true)
+
+        and: 'A command object denoting that the password has been changed'
+        def cmd = new UserUpdateCommand()
+        cmd.with {
+            username = user.username
+            password = 'mynewpasswordisgreat'
+        }
+
+        when: 'We call updateUser'
+        def updatedUser = service.updateUser(cmd)
+
+        then: 'We receive the original user object'
+        updatedUser == user
+        updatedUser.username == old(user.username)
+        updatedUser.passwordHash == old(user.passwordHash)
+    }
+
+
     def "Service can retrieve a user with a valid user ID"() {
     	given: "An existing user"
 
@@ -279,6 +340,14 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
     	then: "the username property is updated"
     	user.id == updatedUser.id
     	user.username != old(user.username)
+    }
+
+    def 'Attempting to update the username with an invalid User ID results in a null object'() {
+        when: 'We call updateUsername with an invalid User ID'
+        def result = service.updateUsername(-331L, 'MyNewUserName')
+
+        then: 'We receive a null object'
+        !result
     }
 
     def "Attempting to update username to invalid value results in error"() {
@@ -451,4 +520,15 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         users.contains existingUser1
     }
 
+    void 'onlineUserCount just returns the total user count for now'() {
+        given: 'A few existing users'
+        new User(username:'gene', passwordHash:'burger').save(failOnError: true)
+        new User(username:'lana', passwordHash:'testpasswd').save(failOnError: true)
+
+        when: 'We call onlineUserCount on the service'
+        def count = service.onlineUserCount()
+
+        then: 'For the moment it will return the total user count'
+        2 == count
+    }
 }

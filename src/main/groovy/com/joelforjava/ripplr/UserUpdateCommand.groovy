@@ -17,7 +17,7 @@ class UserUpdateCommand implements Validateable {
 
     static constraints = {
         importFrom User
-        profile validator: { val, obj -> val.validate() }
+        profile validator: { val, obj -> val?.validate() }
         password size: 6..150, blank: true,
                 validator: { passwd, urc ->
                     return passwd != urc.username

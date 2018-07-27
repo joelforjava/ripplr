@@ -58,16 +58,17 @@ class UserController {
         withForm {
         	if (urc.hasErrors()) {
         		render view: "registration", model: [ user : urc ]
-        	} else {
-                def user = userService.createUserAndProfile(urc)
-                if (user.hasErrors()) {
-                    render view: "registration", model: [ user : user ]
-                    return
-                }
-
-                flash.message = "Welcome aboard!"
-                redirect uri: "/"
+                return
         	}
+
+            def user = userService.createUserAndProfile(urc)
+            if (user.hasErrors()) {
+                render view: "registration", model: [ user : user ]
+                return
+            }
+
+            flash.message = "Welcome aboard!"
+            redirect uri: "/"
         }.invalidToken {
             invalidToken()
         }
@@ -82,22 +83,33 @@ class UserController {
         [ user : user ]
     }
 
+    // TODO - consider if this really should be separated out into user/profile updates
     def updateProfile(UserUpdateCommand uuc) {
     	withForm {
+
+            if (!uuc.username) {
+                response.sendError 404
+                return
+            }
+
         	if (uuc.hasErrors()) {
-        		render view: "update", model: [ user : uuc ]
+        		respond uuc.errors, [view: "update", model: [ user : uuc ] ]
                 return
         	}
-            // TODO - make this the first route to remove exceptions, if possible
-            def user = userService.findUser(uuc.username)
-            if (uuc.passwordDirty) {
-                user = userService.saveUser(user.id, uuc.username, uuc.password)
-            } else if (uuc.usernameDirty) {
-                userService.updateUsername(user.id, uuc.username)
-            } // otherwise, no need to save user
-            // admin page will be used for locking/expiring accounts
 
-            profileService.updateProfile(user.id, uuc.profile, true)
+            def user = userService.updateUser(uuc)
+            if (user == null) {
+                response.sendError 404
+                return
+            }
+
+            // TODO - this really shouldn't send 404. What's the best response?
+            Profile profile = profileService.updateProfile(user.id, uuc.profile, true)
+            if (profile == null) {
+                response.sendError 404
+                return
+            }
+
             flash.message = "Changes Saved."
             redirect uri: "/"   // Maybe go back to 'update'?
     	}.invalidToken {

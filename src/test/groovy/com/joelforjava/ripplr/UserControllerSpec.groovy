@@ -201,6 +201,7 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
     /* --- Update Specs --- */
 
+    // TODO - rethink and refactor these tests to make sure they are LOGICAL! (See UserServiceSpec ignored test)
     def "Updating user and profile via update action with command object"() {
     	given: "An existing user with an existing profile"
     	def existingUser = new User(username:'gene', passwordHash:'burger',
@@ -224,8 +225,7 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
-            1 * findUser(_) >> existingUser
-            1 * saveUser(_, _, _) >> new User(username: urc.username, passwordHash: urc.password)
+            1 * updateUser(_) >> new User(username: urc.username, passwordHash: urc.password)
         }
 
         and: "a mock profile service"
@@ -270,8 +270,7 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
-            1 * findUser(_) >> existingUser
-            1 * updateUsername(_, _) >> new User(username: urc.username, passwordHash: existingUser.passwordHash)
+            1 * updateUser(_) >> new User(username: urc.username, passwordHash: existingUser.passwordHash)
         }
 
         and: "a mock profile service"
@@ -295,10 +294,8 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
     def "Updating only profile values via update action with command object"() {
         given: "An existing user with an existing profile"
-        def existingUser = new User(username:'louisebelcher', passwordHash:'burger').save(failOnError: true)
-        def existingProfile = new Profile(fullName: 'screech powers', email: 'lou@bobs.com')
-        existingUser.profile = existingProfile
-        existingUser.save(flush: true)
+        def existingUser = new User(username:'louisebelcher', passwordHash:'burger',
+                profile: new Profile(fullName: 'screech powers', email: 'lou@bobs.com'))
 
         and: "A property configured command object"
         def urc = mockCommandObject UserUpdateCommand
@@ -317,10 +314,9 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         urc.validate()
 
         and: "a mock user service"
-        def mockUserService = Mock(UserService) {
-            1 * findUser(_) >> existingUser
+        controller.userService = Mock(UserService) {
+            1 * updateUser(_) >> existingUser
         }
-        controller.userService = mockUserService
 
         and: "a mock profile service"
         controller.profileService = Mock(ProfileService) {
@@ -363,15 +359,11 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         response.text == "Invalid or duplicate form submission"
     }
 
-    def "Updating user with invalid command object returns to the update view for fixing errors"() {
+    def "Calling update with no username set in the command object results in a NOT FOUND error"() {
         given: "an invalid command object"
 
         def uuc = mockCommandObject UserUpdateCommand
-        uuc.profile = mockCommandObject ProfileCommand
         !uuc.validate()
-
-        and: "we have an existing user"
-        def user = new User(username: "carol", passwordHash:"notcarollouise")
 
         and: "we have the form token set"
         def tokenHolder = SynchronizerTokensHolder.store(session)
@@ -381,19 +373,67 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         when: "the new update action is invoked"
         controller.updateProfile uuc
 
-        then: "we are redirected to the update view"
-
-        view == "/user/update"
+        then: "we receive a NOT FOUND error"
+        status == 404
 
     }
 
-    def "calling update action on a logged in user returns a user's details in command object"() {
+    def 'Calling update with an invalid command object results in being sent back to the update page'() {
+        given: 'an invalid command object'
+
+        def uuc = mockCommandObject UserUpdateCommand
+        uuc.username = 'obviously-real-username'
+        !uuc.validate()
+
+        and: 'we have the form token set'
+        def tokenHolder = SynchronizerTokensHolder.store(session)
+        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+        params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
+
+        when: 'the new update action is invoked'
+        controller.updateProfile uuc
+
+        then: 'we are sent back to the update page'
+        view == 'update'
+
+    }
+
+    def 'Calling update with a username that results in no user being returns results in a NOT FOUND error'() {
+        given: 'a command object with a username'
+
+        def uuc = mockCommandObject UserUpdateCommand
+        uuc.with {
+            username = "sterling"
+            password = "duchess"
+            passwordVerify = "duchess"
+            profile = mockCommandObject ProfileCommand
+            profile.fullName = "Sterling Archer"
+            profile.email = "sterling@isis.com"
+        }
+
+        and: 'we have the form token set'
+        def tokenHolder = SynchronizerTokensHolder.store(session)
+        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+        params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
+
+        and: 'a mock user service to return null'
+        controller.userService = Mock(UserService) {
+            1 * updateUser(_) >> null
+        }
+
+        when: 'the new update action is invoked'
+        controller.updateProfile uuc
+
+        then: "we receive a NOT FOUND error"
+        status == 404
+    }
+
+    def "calling update action on a logged in user returns a user's details in model"() {
         given: "an existing user with a profile"
-        def user = new User(username:'louise', passwordHash:'pinkhat').save(failOnError: true)
-        user.profile = new Profile(fullName: 'louise belcher', email: 'louise@bobsburgers.io', about: 'not sharing that', 
+        def user = new User(username:'louise', passwordHash:'pinkhat',
+                profile: new Profile(fullName: 'louise belcher', email: 'louise@bobsburgers.io', about: 'not sharing that',
                                     homepage: 'http://louisebelcher.me', twitterProfile: 'http://twitter.com/louise', 
-                                    facebookProfile: 'http://www.facebook.com', country: 'United States', timezone: 'Zone')
-        user.save(flush: true)
+                                    facebookProfile: 'http://www.facebook.com', country: 'United States', timezone: 'Zone'))
 
         and: "a mock security service"
         controller.springSecurityService = Mock(SpringSecurityService) {
@@ -404,7 +444,7 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
         def model = controller.update()
 
-        then: "we receive a command object with the user's profile details"
+        then: "we receive a model object with the user's profile details"
 
         model.user.profile.fullName == user.profile.fullName
         model.user.profile.email == user.profile.email
@@ -417,10 +457,8 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
     // unviewable if user isn't logged in? -- good luck with that
     def "profile action returns profile for valid user when there is no one logged in"() {
         given: "an existing user with profile"
-        def existingUser = new User(username:'gene', passwordHash:'burger').save(failOnError: true)
-        def existingProfile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com')
-        existingUser.profile = existingProfile
-        existingUser.save(flush: true)
+        def existingUser = new User(username:'gene', passwordHash:'burger',
+                profile: new Profile(fullName: 'gene belcher', email: 'gene@bobs.com'))
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
@@ -439,20 +477,19 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         then: "we receive the profile for viewing"
 
         //view == '/user/profile'
-        model.profile.fullName == existingProfile.fullName
-        model.profile.email == existingProfile.email
+        model.profile.fullName == existingUser.profile.fullName
+        model.profile.email == existingUser.profile.email
 
     }
 
     def "profile action returns profile for valid user when there is a user logged in"() {
         given: "an existing user with profile"
-        def existingUser = new User(username:'gene', passwordHash:'burger').save(failOnError: true)
-        def existingProfile = new Profile(fullName: 'gene belcher', email: 'gene@bobs.com')
-        existingUser.profile = existingProfile
-        existingUser.save(flush: true)
+        def existingUser = new User(username:'gene', passwordHash:'burger',
+                profile: new Profile(fullName: 'gene belcher', email: 'gene@bobs.com'))
 
         and: "a logged in user"
-        def loggedInUser = new User(username:'sterling', passwordHash:'duchess').save(failOnError: true)
+        def loggedInUser = new User(username:'sterling', passwordHash:'duchess')
+                //.save(failOnError: true)
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
@@ -472,8 +509,8 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         then: "we receive the profile for viewing"
 
         //view == '/user/profile'
-        model.profile.fullName == existingProfile.fullName
-        model.profile.email == existingProfile.email
+        model.profile.fullName == existingUser.profile.fullName
+        model.profile.email == existingUser.profile.email
 
     }
 

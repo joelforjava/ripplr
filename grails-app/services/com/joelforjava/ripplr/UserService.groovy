@@ -76,7 +76,7 @@ class UserService {
         user
     }
 
-    User saveUser(Long userId, String username, String passwordHash, boolean accountLocked = false,
+    protected User saveUser(Long userId, String username, String passwordHash, boolean accountLocked = false,
                   boolean accountExpired = false, boolean passwordExpired = false) {
 
         def user = findUser userId
@@ -95,7 +95,7 @@ class UserService {
         user
     }
 
-    User updateUsername(userId, String username) {
+    protected User updateUsername(Long userId, String username) {
         def user = findUser userId
 
         if (!user) {
@@ -109,7 +109,17 @@ class UserService {
 
     }
 
-    // For future development and current testing
+    User updateUser(UserUpdateCommand cmd) {
+        def user = findUser cmd.username
+        if (cmd.passwordDirty) {
+            return this.saveUser(user.id, cmd.username, cmd.password)
+        } else if (cmd.usernameDirty) {
+            // TODO - if the username is dirty, then the 'findUser' call above will always return null!
+            return this.updateUsername(user.id, cmd.username)
+        }
+        user
+    }
+
     int onlineUserCount() {
         return User.count()
     }
