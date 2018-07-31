@@ -1,134 +1,26 @@
 package com.joelforjava.ripplr
 
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.web.servlet.mvc.SynchronizerTokensHolder
 
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
 import spock.lang.Ignore
 import spock.lang.Specification
-import spock.lang.Unroll
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-// TODO: DO NOT UPDATE to the Testing Support Framework until you figure out WTF you get the 'is not a domain' error on the command objects!
-@TestFor(UserController)
-@Mock([User, UserRole, Profile])
-class UserControllerSpec extends Specification implements DomainDataFactory {
+class UserControllerSpec extends Specification implements ControllerUnitTest<UserController>, DataTest, DomainDataFactory {
 
+    def setupSpec() {
+        mockDomains(User, UserRole, Profile)
+    }
     /* --- Register Specs --- */
-
-    @Unroll
-    def "Registering with command object for #username validates correctly"() {
-
-        given: "A mocked register command object"
-        def urc = mockCommandObject UserRegisterCommand
-
-        and: "a set of initial values"
-        urc.username = username
-        urc.password = password
-        urc.passwordVerify = passwordVerify
-        urc.profile = mockCommandObject ProfileCommand
-        urc.profile.fullName = fullName
-        urc.profile.email = email
-        // Other items are optional
-
-        when: "the validator is invoked"
-        def isValid = urc.validate()
-
-        then: "the appropriate fields are flagged as errors"
-        isValid == anticipatedValid
-        urc.errors.getFieldError(fieldInError)?.code == errorCode
-
-        where:
-        username   | password   | passwordVerify    | fullName		| email					| anticipatedValid  | fieldInError      | errorCode
-        "kirk_ham" | "password" | "IDontMatch"      | "Kirk Hammett"| "kirk@metallica.com"	| false             | "passwordVerify"  | "validator.invalid"
-        "james_het"| "password" | "password"        | "Jim Hetfield"| "james@metallica.com" | true				| null              | null
-        "dave_must"| "guitars"  | "guitars"         | "Dave"        | "dave@megadeth.com"   | true				| null              | null
-        "dr"       | "password" | "password"        | "Doc"			| "doc@derp.com"		| false             | "username"        | "size.toosmall"
-        "jeeves"   | "password" | "password"        | ""			| "jeeves@metallica.com"| false				| "profile"		    | "validator.invalid"
-        "kirk_ham" | "password" | "password"		| "Kirk Hammett"| ""					| false				| "profile"			| "validator.invalid"
-        "james_het"| "guest12"	| "guest12"			| "Jim"			| "NotAnEmailAddress"	| false				| "profile"	        | "validator.invalid"
-    }
-
-    @Unroll
-    def "Updating with command object for #username validates correctly"() {
-
-        given: "A mocked update command object"
-        def uuc = mockCommandObject UserUpdateCommand
-
-        and: "a set of initial values"
-        uuc.username = username
-        uuc.password = password
-        uuc.passwordVerify = passwordVerify
-        uuc.profile = mockCommandObject ProfileCommand
-        uuc.profile.fullName = fullName
-        uuc.profile.email = email
-        uuc.usernameDirty = false
-        uuc.passwordDirty = false
-        // Other items are optional
-
-        when: "the validator is invoked"
-        def isValid = uuc.validate()
-
-        then: "the appropriate fields are flagged as errors"
-        println uuc.errors
-        isValid == anticipatedValid
-        uuc.errors.getFieldError(fieldInError)?.code == errorCode
-
-        where:
-        username   | password   | passwordVerify    | fullName      | email                 | anticipatedValid  | fieldInError      | errorCode
-        "kirk_ham" | "password" | "IDontMatch"      | "Kirk Hammett"| "kirk@metallica.com"  | false             | "passwordVerify"  | "validator.invalid"
-        "james_het"| "password" | "password"        | "Jim Hetfield"| "james@metallica.com" | true              | null              | null
-        "dave_must"| "guitars"  | "guitars"         | "Dave"        | "dave@megadeth.com"   | true              | null              | null
-        "dr"       | "password" | "password"        | "Doc"         | "doc@derp.com"        | false             | "username"        | "size.toosmall"
-        "jeeves"   | "password" | "password"        | ""            | "jeeves@metallica.com"| false             | "profile"         | "validator.invalid"
-        "kirk_ham" | "password" | "password"        | "Kirk Hammett"| ""                    | false             | "profile"         | "validator.invalid"
-        "j4mes_h3t"| "guest12"  | "guest12"         | "Jim"         | "NotAnEmailAddress"   | false             | "profile"         | "validator.invalid"
-    }
-
-    @Unroll
-    def "Common Profile command object for #fullName validates correctly"() {
-
-        given: "A mocked register command object"
-        def pc = mockCommandObject ProfileCommand
-
-        and: "a set of initial values"
-        pc.fullName = fullName
-        pc.email = email
-        // Other items are optional
-
-        when: "the validator is invoked"
-        def isValid = pc.validate()
-
-        then: "the appropriate fields are flagged as errors"
-        isValid == anticipatedValid
-        pc.errors.getFieldError(fieldInError)?.code == errorCode
-
-        where:
-        fullName		| email					| anticipatedValid  | fieldInError      | errorCode
-        "Jim Hetfield"  | "james@metallica.com" | true				| null              | null
-        "Dave"          | "dave@megadeth.com"   | true				| null              | null
-        ""			    | "jeeves@metallica.com"| false				| "fullName"		| "blank"
-        "Kirk Hammett"  | ""					| false				| "email"			| "blank"
-        "Jim"			| "NotAnEmailAddress"	| false				| "email"	        | "email.invalid"
-    }
 
     def "Invoking register action with command object"() {
     	given: "A properly configured command object"
-    	def urc = mockCommandObject UserRegisterCommand
-    	urc.with {
-    		username = "sterling"
-    		password = "duchess"
-    		passwordVerify = "duchess"
-            profile = mockCommandObject ProfileCommand
-    		profile.fullName = "Sterling Archer"
-    		profile.email = "sterling@isis.com"
-    	}
+    	def urc = validUserRegisterCommandObject()
 
     	and: "it has been validated"
-    	urc.validate()
+//    	urc.validate()
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
@@ -151,18 +43,10 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
 
     def "Invoking register action without token results in an error"() {
     	given: "A properly configured command object"
-    	def urc = mockCommandObject UserRegisterCommand
-    	urc.with {
-    		username = "sterling"
-    		password = "duchess"
-    		passwordVerify = "duchess"
-            profile = mockCommandObject ProfileCommand
-    		profile.fullName = "Sterling Archer"
-    		profile.email = "sterling@isis.com"
-    	}
+        def urc = validUserRegisterCommandObject()
 
     	and: "it has been validated"
-    	urc.validate()
+//    	urc.validate()
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
@@ -204,251 +88,198 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
     // TODO - rethink and refactor these tests to make sure they are LOGICAL! (See UserServiceSpec ignored test)
     def "Updating user and profile via update action with command object"() {
     	given: "An existing user with an existing profile"
-    	def existingUser = new User(username:'gene', passwordHash:'burger',
-                profile: new Profile(fullName: 'gene belcher', email: 'gene@bobs.com'))
+            def existingUser = new User(username:'gene', passwordHash:'burger',
+                    profile: new Profile(fullName: 'gene belcher', email: 'gene@bobs.com'))
 
     	and: "A property configured command object"
-    	def urc = mockCommandObject UserUpdateCommand
-    	urc.with {
-    		username = "gene"
-    		password = "merman"
-    		passwordVerify = "merman"
-            profile = mockCommandObject ProfileCommand
-    		profile.fullName = "Gene Belcher"
-    		profile.email = "gene@genesburgers.com"
-            passwordDirty = true
-            usernameDirty = false
-    	}
-
-    	and: "it has been validated"
-    	urc.validate()
+            def urc = validUserUpdateCommandObject()
 
         and: "a mock user service"
-        controller.userService = Mock(UserService) {
-            1 * updateUser(_) >> new User(username: urc.username, passwordHash: urc.password)
-        }
+            controller.userService = Mock(UserService) {
+                1 * updateUser(_) >> new User(username: urc.username, passwordHash: urc.password)
+            }
 
         and: "a mock profile service"
-        controller.profileService = Mock(ProfileService) {
-            1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
-        }
+            controller.profileService = Mock(ProfileService) {
+                1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
+            }
 
     	and: "we have the form token set"
-        def tokenHolder = SynchronizerTokensHolder.store(session)
-        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
-        params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
+            def tokenHolder = SynchronizerTokensHolder.store(session)
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_KEY] =
+                    tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
         when: "the new update action is invoked"
-        controller.updateProfile urc
+            controller.updateProfile urc
 
         then: "the user is updated and the browser is redirected"
-        !urc.hasErrors()
-        response.redirectedUrl == "/"
-        flash.message == "Changes Saved."
+            !urc.hasErrors()
+            response.redirectedUrl == '/'
+            flash.message == 'Changes Saved.'
     }
 
     def "Updating username via update action with command object"() {
         given: "An existing user with an existing profile"
-        def existingUser = new User(username:'lisaturtle', passwordHash:'burger',
-                profile: new Profile(fullName: 'screech powers', email: 'screech@sanchez.com'))
+            def existingUser = new User(username:'lisaturtle', passwordHash:'burger',
+                    profile: new Profile(fullName: 'screech powers', email: 'screech@sanchez.com'))
 
         and: "A property configured command object"
-        def urc = mockCommandObject UserUpdateCommand
-        urc.with {
-            username = "gene"
-            password = "burger"
-            passwordVerify = "burger"
-            profile = mockCommandObject ProfileCommand
-            profile.fullName = "Gene Belcher"
-            profile.email = "gene@genesburgers.com"
-            passwordDirty = false
-            usernameDirty = true
-        }
-
-        and: "it has been validated"
-        urc.validate()
+            def urc = validUserUpdateCommandObject()
 
         and: "a mock user service"
-        controller.userService = Mock(UserService) {
-            1 * updateUser(_) >> new User(username: urc.username, passwordHash: existingUser.passwordHash)
-        }
+            controller.userService = Mock(UserService) {
+                1 * updateUser(_) >> new User(username: urc.username, passwordHash: existingUser.passwordHash)
+            }
 
         and: "a mock profile service"
-        controller.profileService = Mock(ProfileService) {
-            1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
-        }
+            controller.profileService = Mock(ProfileService) {
+                1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
+            }
 
         and: "we have the form token set"
-        def tokenHolder = SynchronizerTokensHolder.store(session)
-        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
-        params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
+            def tokenHolder = SynchronizerTokensHolder.store(session)
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_KEY] =
+                    tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
         when: "the new update action is invoked"
-        controller.updateProfile urc
+            controller.updateProfile urc
 
         then: "the user is updated and the browser is redirected"
-        !urc.hasErrors()
-        response.redirectedUrl == "/"
-        flash.message == "Changes Saved."
+            !urc.hasErrors()
+            response.redirectedUrl == '/'
+            flash.message == 'Changes Saved.'
     }
 
-    def "Updating only profile values via update action with command object"() {
-        given: "An existing user with an existing profile"
-        def existingUser = new User(username:'louisebelcher', passwordHash:'burger',
-                profile: new Profile(fullName: 'screech powers', email: 'lou@bobs.com'))
+    def 'Updating only profile values via update action with command object'() {
+        given: 'An existing user with an existing profile'
+            def existingUser = new User(username:'louisebelcher', passwordHash:'burger',
+                    profile: new Profile(fullName: 'screech powers', email: 'lou@bobs.com'))
 
-        and: "A property configured command object"
-        def urc = mockCommandObject UserUpdateCommand
-        urc.with {
-            username = existingUser.username
-            password = "burger"
-            passwordVerify = "burger"
-            profile = mockCommandObject ProfileCommand
-            profile.fullName = "Louise Belcher"
-            profile.email = "louise@genesburgers.com"
-            passwordDirty = false
-            usernameDirty = false
-        }
+        and: 'A property configured command object'
+            def urc = validUserUpdateCommandObject()
 
-        and: "it has been validated"
-        urc.validate()
+        and: 'a mock user service'
+            controller.userService = Mock(UserService) {
+                1 * updateUser(_) >> existingUser
+            }
 
-        and: "a mock user service"
-        controller.userService = Mock(UserService) {
-            1 * updateUser(_) >> existingUser
-        }
+        and: 'a mock profile service'
+            controller.profileService = Mock(ProfileService) {
+                1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
+            }
 
-        and: "a mock profile service"
-        controller.profileService = Mock(ProfileService) {
-            1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
-        }
+        and: 'we have the form token set'
+            def tokenHolder = SynchronizerTokensHolder.store(session)
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_KEY] =
+                    tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
-        and: "we have the form token set"
-        def tokenHolder = SynchronizerTokensHolder.store(session)
-        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
-        params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
+        when: 'the new update action is invoked'
+            controller.updateProfile urc
 
-        when: "the new update action is invoked"
-        controller.updateProfile urc
-
-        then: "the user is updated and the browser is redirected"
-        !urc.hasErrors()
-        response.redirectedUrl == "/"
-        flash.message == "Changes Saved."
+        then: 'the user is updated and the browser is redirected'
+            !urc.hasErrors()
+            response.redirectedUrl == "/"
+            flash.message == "Changes Saved."
     }
 
-    def "Updating user without a form token results in an error"() {
-        given: "A properly configured command object"
-        def urc = mockCommandObject UserUpdateCommand
-        urc.with {
-            username = "sterling"
-            password = "duchess"
-            passwordVerify = "duchess"
-            profile = mockCommandObject ProfileCommand
-            profile.fullName = "Sterling Archer"
-            profile.email = "sterling@isis.com"
-        }
+    def 'Updating user without a form token results in an error'() {
+        given: 'A properly configured command object'
+            def urc = validUserUpdateCommandObject()
 
-        and: "it has been validated"
-        urc.validate()
+        when: 'the new register action is invoked'
+            controller.updateProfile urc
 
-        when: "the new register action is invoked"
-        controller.updateProfile urc
-
-        then: "the user is not registered and an error message is received"
-        response.text == "Invalid or duplicate form submission"
+        then: 'the user is not registered and an error message is received'
+            response.text == 'Invalid or duplicate form submission'
     }
 
-    def "Calling update with no username set in the command object results in a NOT FOUND error"() {
-        given: "an invalid command object"
+    def 'Calling update with no username set in the command object results in a NOT FOUND error'() {
+        given: 'an empty command object'
+            def uuc = emptyUserUpdateCommandObject()
 
-        def uuc = mockCommandObject UserUpdateCommand
-        !uuc.validate()
+        and: 'we have the form token set'
+            def tokenHolder = SynchronizerTokensHolder.store(session)
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_KEY] =
+                    tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
-        and: "we have the form token set"
-        def tokenHolder = SynchronizerTokensHolder.store(session)
-        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
-        params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
+        when: 'the new update action is invoked'
+            controller.updateProfile uuc
 
-        when: "the new update action is invoked"
-        controller.updateProfile uuc
-
-        then: "we receive a NOT FOUND error"
-        status == 404
+        then: 'we receive a NOT FOUND error'
+            status == 404
 
     }
 
     def 'Calling update with an invalid command object results in being sent back to the update page'() {
         given: 'an invalid command object'
-
-        def uuc = mockCommandObject UserUpdateCommand
-        uuc.username = 'obviously-real-username'
-        !uuc.validate()
+            def uuc = Spy(UserUpdateCommand) {
+                1 * hasErrors() >> true
+            }
+            uuc.username = 'obviously-real-username'
 
         and: 'we have the form token set'
-        def tokenHolder = SynchronizerTokensHolder.store(session)
-        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
-        params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
+            def tokenHolder = SynchronizerTokensHolder.store(session)
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_KEY] =
+                    tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
         when: 'the new update action is invoked'
-        controller.updateProfile uuc
+            controller.updateProfile uuc
 
         then: 'we are sent back to the update page'
-        view == 'update'
+            view == 'update'
 
+        and: 'we get the command object sent back to us'
+            model.user == uuc
     }
 
     def 'Calling update with a username that results in no user being returns results in a NOT FOUND error'() {
         given: 'a command object with a username'
-
-        def uuc = mockCommandObject UserUpdateCommand
-        uuc.with {
-            username = "sterling"
-            password = "duchess"
-            passwordVerify = "duchess"
-            profile = mockCommandObject ProfileCommand
-            profile.fullName = "Sterling Archer"
-            profile.email = "sterling@isis.com"
-        }
+            def uuc = validUserUpdateCommandObject()
 
         and: 'we have the form token set'
-        def tokenHolder = SynchronizerTokensHolder.store(session)
-        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
-        params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
+            def tokenHolder = SynchronizerTokensHolder.store(session)
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_KEY] =
+                    tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
         and: 'a mock user service to return null'
-        controller.userService = Mock(UserService) {
-            1 * updateUser(_) >> null
-        }
+            controller.userService = Mock(UserService) {
+                1 * updateUser(_) >> null
+            }
 
         when: 'the new update action is invoked'
-        controller.updateProfile uuc
+            controller.updateProfile uuc
 
         then: "we receive a NOT FOUND error"
-        status == 404
+            status == 404
     }
 
     def "calling update action on a logged in user returns a user's details in model"() {
         given: "an existing user with a profile"
-        def user = new User(username:'louise', passwordHash:'pinkhat',
-                profile: new Profile(fullName: 'louise belcher', email: 'louise@bobsburgers.io', about: 'not sharing that',
-                                    homepage: 'http://louisebelcher.me', twitterProfile: 'http://twitter.com/louise', 
-                                    facebookProfile: 'http://www.facebook.com', country: 'United States', timezone: 'Zone'))
+            def user = new User(username:'louise', passwordHash:'pinkhat',
+                    profile: new Profile(fullName: 'louise belcher', email: 'louise@bobsburgers.io',
+                                        about: 'not sharing that', homepage: 'http://louisebelcher.me',
+                                        twitterProfile: 'http://twitter.com/louise',
+                                        facebookProfile: 'http://www.facebook.com',
+                                        country: 'United States', timezone: 'Zone'))
 
         and: "a mock security service"
-        controller.springSecurityService = Mock(SpringSecurityService) {
-            1 * getCurrentUser() >> user
-        }
+            controller.springSecurityService = Mock(SpringSecurityService) {
+                1 * getCurrentUser() >> user
+            }
 
         when: "we call update"
-
-        def model = controller.update()
+            def model = controller.update()
 
         then: "we receive a model object with the user's profile details"
-
-        model.user.profile.fullName == user.profile.fullName
-        model.user.profile.email == user.profile.email
-        model.user.username == user.username
+            model.user.profile.fullName == user.profile.fullName
+            model.user.profile.email == user.profile.email
+            model.user.username == user.username
     }
 
     /* --- Profile Specs --- */
@@ -803,8 +634,37 @@ class UserControllerSpec extends Specification implements DomainDataFactory {
         [existingUser, userToBeLoggedIn]
     }
 
-//    private def mockCommandObject(Class clazz) {
-//        clazz.newInstance()
-//    }
+    private def mockCommandObject(Class clazz) {
+        clazz.newInstance()
+    }
 
+    private UserRegisterCommand validUserRegisterCommandObject() {
+        def urc = new UserRegisterCommand()
+        urc.with {
+            username = "sterling"
+            password = "duchess"
+            passwordVerify = "duchess"
+            profile = mockCommandObject ProfileCommand
+            profile.fullName = "Sterling Archer"
+            profile.email = "sterling@isis.com"
+        }
+        urc
+    }
+
+    private UserUpdateCommand validUserUpdateCommandObject() {
+        def uuc = new UserUpdateCommand()
+        uuc.with {
+            username = "sterling"
+            password = "duchess"
+            passwordVerify = "duchess"
+            profile = new ProfileCommand()
+            profile.fullName = "Sterling Archer"
+            profile.email = "sterling@isis.com"
+        }
+        uuc
+    }
+
+    private UserUpdateCommand emptyUserUpdateCommandObject() {
+        new UserUpdateCommand()
+    }
 }
