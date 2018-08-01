@@ -9,9 +9,10 @@ class RippleController {
     def index() {
     	if (!params.id) {
     		response.sendError 400 // do we want to send this? what can be done to prevent it?
-    	} else {
-			redirect action: 'timeline', params: params
+            return
 		}
+
+        redirect action: 'timeline', params: params
 
     }
 
@@ -23,14 +24,15 @@ class RippleController {
 
 
     def timeline(String id) {
-    	// change to try/catch since service throws exceptions
+
     	def user = userService.findUser id
 
     	if (!user) {
     		response.sendError 404
-    	} else {
-    		[ user : user ]
+			return
     	}
+
+        [ user : user ]
     }
 
     // this should evolve to include topics of those followed

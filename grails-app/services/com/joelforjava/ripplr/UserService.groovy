@@ -55,6 +55,8 @@ class UserService {
         users
     }
 
+    // Do bear in mind that this is used by Bootstrap as of now
+    @Deprecated // use create(UserRegisterCommand) instead
     User createUser(String username, String passwordHash, boolean accountLocked = false, boolean accountExpired = false,
     			 boolean passwordExpired = false) {
 
@@ -67,13 +69,17 @@ class UserService {
         user
     }
 
-    User createUserAndProfile(UserRegisterCommand userRegistration) {
-        def user = createUser(userRegistration.username, userRegistration.password)
-        // TODO - the user map was added to appease unit tests. Try to refactor in such a way that this hack isn't needed!
-        // NOTE - this works fine when the application is running but it's just not necessary
-        user.profile = new Profile(userRegistration.profile.properties + [user: user])
-        user.save()
+    User create(UserRegisterCommand command, boolean flush = false) {
+        def user = command as User
+        if (!user?.save(flush: flush)) {
+            log.error("Could not save user: ${user?.errors?.toString()}")
+            return user
+        }
         user
+    }
+
+    User createUserAndProfile(UserRegisterCommand userRegistration) {
+        create(userRegistration, true)
     }
 
     protected User saveUser(Long userId, String username, String passwordHash, boolean accountLocked = false,
@@ -174,7 +180,7 @@ class UserService {
         return false
     }
 
-    def getFollowedByForUser(String username) {
+    def getFollowersForUser(String username) {
         def user = findUser username
         if (user) {
             def query = User.where {
@@ -186,7 +192,7 @@ class UserService {
         }
     }
 
-    def getBlockedByOthersForUser(String username) {
+    def getBlockersForUser(String username) {
         def user = findUser username
         if (user) {
             def query = User.where {

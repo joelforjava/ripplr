@@ -1,22 +1,14 @@
 package com.joelforjava.ripplr
 
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
-import spock.lang.Ignore
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@TestFor(RippleController)
-@Mock([User, Ripple, UserService])
-class RippleControllerSpec extends Specification {
+class RippleControllerSpec extends Specification implements ControllerUnitTest<RippleController>, DataTest {
 
-    def setup() {
-    }
-
-    def cleanup() {
+    def setupSpec() {
+		mockDomains(User, Ripple)
     }
 
 	/* --- global specs --- */

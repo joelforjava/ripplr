@@ -19,33 +19,32 @@ class UserController {
      */
     def profile(String id) {
 
-        try {
-            def user = userService.findUser(id)
-            if (!user) {
-                response.sendError 404
-                return
-            }
-            def currentUser
-            boolean isLoggedInFollowing = false
-            if (springSecurityService.isLoggedIn()) {
-                log.debug "A user is logged in"
-                currentUser = springSecurityService.currentUser
-                log.debug "The current user is ${currentUser.username}"
-                if (user.blocking?.contains(currentUser)) {
-                    log.debug "${user.username} is blocking ${currentUser.username}"
-                    response.sendError 404
-                    return [] // prevent from 'falling through' to the return with profile data
-                }
-                if (currentUser.following?.contains(user)) {
-                    isLoggedInFollowing = true
-                }
-            }
-            log.debug "Finished dealing with logged-in scenario"
-            def followedBy = userService.getFollowedByForUser user.username
-            return [profile: user.profile, followedBy: followedBy, currentLoggedInUser: currentUser, loggedInIsFollowing: isLoggedInFollowing]
-        } catch (ue) {
-            response.sendError 404   
+        def user = userService.findUser(id)
+        if (!user) {
+            response.sendError 404
+            return
         }
+
+        def currentUser
+        boolean isLoggedInFollowing = false
+        if (springSecurityService.isLoggedIn()) {
+            log.debug "A user is logged in"
+            currentUser = springSecurityService.currentUser
+            log.debug "The current user is ${currentUser.username}"
+            if (user.blocking?.contains(currentUser)) {
+                log.debug "${user.username} is blocking ${currentUser.username}"
+                response.sendError 404
+                return [] // prevent from 'falling through' to the return with profile data
+            }
+            // TODO - should this be refactored into a service call?
+            if (currentUser.following?.contains(user)) {
+                isLoggedInFollowing = true
+            }
+        }
+        log.debug "Finished dealing with logged-in scenario"
+
+        def followers = userService.getFollowersForUser user.username
+        return [profile: user.profile, followedBy: followers, currentLoggedInUser: currentUser, loggedInIsFollowing: isLoggedInFollowing]
     }
 
     def registration() { }
@@ -115,13 +114,6 @@ class UserController {
     	}.invalidToken {
             invalidToken()
     	}
-    }
-
-    def image() {
-        if (request.method == "POST") {
-            def user = springSecurityService.currentUser
-        }
-
     }
 
     @Deprecated

@@ -5,7 +5,7 @@ import grails.validation.Validateable
 /**
  * Created by joel on 3/18/17.
  */
-class ProfileCommand implements Validateable {
+class ProfileRegisterCommand implements Validateable {
     byte[] mainPhoto
     byte[] coverPhoto
     String fullName
@@ -20,5 +20,16 @@ class ProfileCommand implements Validateable {
 
     static constraints = {
         importFrom Profile
+    }
+
+    transient Profile toProfile() {
+        new Profile(this.properties)
+    }
+
+    transient asType(Class target) {
+        if (target == Profile) {
+            return this.toProfile()
+        }
+        throw new ClassCastException("ProfileRegisterCommand object cannot be cast to $target")
     }
 }

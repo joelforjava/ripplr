@@ -84,7 +84,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
             username = "sterling"
             password = "duchess"
             passwordVerify = "duchess"
-            profile = new ProfileCommand()
+            profile = new ProfileRegisterCommand()
             profile.fullName = "Sterling Archer"
             profile.email = "sterling@isis.com"
         }
@@ -488,7 +488,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         existingUser1.save(flush: true)
 
         when: 'We retrieve the users that follow a user'
-        def users = service.getFollowedByForUser existingUser2.username
+        def users = service.getFollowersForUser existingUser2.username
 
         then: 'We get the expected results'
         users != null
@@ -512,7 +512,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         existingUser1.save(flush: true)
 
         when: 'We retrieve the users that block a user'
-        def users = service.getBlockedByOthersForUser existingUser2.username
+        def users = service.getBlockersForUser existingUser2.username
 
         then: 'We get the expected results'
         users != null

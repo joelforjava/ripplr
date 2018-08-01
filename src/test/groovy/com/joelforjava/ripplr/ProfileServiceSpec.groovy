@@ -25,7 +25,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         when: "We attempt to change values"
         def savedProfile = service.updateProfile(user.id,
-                                        new ProfileCommand(fullName: "Sterling Archer",
+                                        new ProfileRegisterCommand(fullName: "Sterling Archer",
                                                 about: "Undercover agent for ISIS", homepage: "http://archer.com",
                                                 email: "duchess@isis.com", twitterProfile: "http://twitter.com/archer",
                                                 facebookProfile: "http://facebook.com/archer"))
@@ -42,7 +42,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     def 'Updating a profile when no profile exists results in receiving a null object'() {
         when: "We attempt to update a profile that doesn't exist"
-        def profile = service.updateProfile(user.id, new ProfileCommand())
+        def profile = service.updateProfile(user.id, new ProfileRegisterCommand())
 
         then: 'The response is null'
         !profile
@@ -50,7 +50,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     def 'Updating the profile of an invalid userId will result in a null object being returned'() {
         when: 'We attempt to update a profile for a user ID that does not exist'
-        def profile = service.updateProfile(-42L, new ProfileCommand())
+        def profile = service.updateProfile(-42L, new ProfileRegisterCommand())
 
         then: 'The response is null'
         !profile
@@ -65,7 +65,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         when: "We attempt to change values"
         def savedProfile = service.updateProfile(user.id,
-                                        new ProfileCommand(fullName: "Sterling Archer",
+                                        new ProfileRegisterCommand(fullName: "Sterling Archer",
                                                 about: "Undercover agent for ISIS", homepage: "http://archer.com",
                                                 email: "duchessisis.com", twitterProfile: "http://twitter.com/archer",
                                                 facebookProfile: "http://facebook.com/archer"))

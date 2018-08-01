@@ -10,7 +10,7 @@ class UserUpdateCommand implements Validateable {
     String password
     String passwordVerify
 
-    ProfileCommand profile
+    ProfileRegisterCommand profile
 
     boolean usernameDirty
     boolean passwordDirty

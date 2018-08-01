@@ -10,7 +10,7 @@ class UserRegisterCommand implements Validateable {
     String password
     String passwordVerify
 
-    ProfileCommand profile
+    ProfileRegisterCommand profile
 
     static constraints = {
         importFrom User
@@ -23,5 +23,16 @@ class UserRegisterCommand implements Validateable {
                 validator: { passwd2, urc ->
                     return passwd2 == urc.password
                 }
+    }
+
+    transient User toUser() {
+        new User(username: username, passwordHash: password, profile: this.profile as Profile)
+    }
+
+    transient asType(Class target) {
+        if (target == User) {
+            return this.toUser()
+        }
+        throw new ClassCastException("UserRegisterCommand cannot be cast to $target")
     }
 }

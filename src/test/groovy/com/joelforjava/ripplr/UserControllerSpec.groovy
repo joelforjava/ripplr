@@ -5,10 +5,10 @@ import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.web.servlet.mvc.SynchronizerTokensHolder
 
 import grails.plugin.springsecurity.SpringSecurityService
-import spock.lang.Ignore
 import spock.lang.Specification
 
-class UserControllerSpec extends Specification implements ControllerUnitTest<UserController>, DataTest, DomainDataFactory {
+class UserControllerSpec extends Specification implements ControllerUnitTest<UserController>, DataTest,
+        CommandObjectDataFactory, DomainDataFactory {
 
     def setupSpec() {
         mockDomains(User, UserRole, Profile)
@@ -66,7 +66,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         given: "an invalid command object"
 
         def urc = mockCommandObject UserRegisterCommand
-        urc.profile = mockCommandObject ProfileCommand // need to do this to prevent NPE
+        urc.profile = mockCommandObject ProfileRegisterCommand // need to do this to prevent NPE
         !urc.validate()
 
         and: "we have the form token set"
@@ -86,17 +86,13 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     /* --- Update Specs --- */
 
     // TODO - rethink and refactor these tests to make sure they are LOGICAL! (See UserServiceSpec ignored test)
-    def "Updating user and profile via update action with command object"() {
-    	given: "An existing user with an existing profile"
-            def existingUser = new User(username:'gene', passwordHash:'burger',
-                    profile: new Profile(fullName: 'gene belcher', email: 'gene@bobs.com'))
-
-    	and: "A property configured command object"
+    def "Calling updateProfile when given a valid command object and when the services return expected domain objects results in no errors returned"() {
+    	given: "A property configured command object"
             def urc = validUserUpdateCommandObject()
 
         and: "a mock user service"
             controller.userService = Mock(UserService) {
-                1 * updateUser(_) >> new User(username: urc.username, passwordHash: urc.password)
+                1 * updateUser(_ as UserUpdateCommand) >> new User(username: urc.username, passwordHash: urc.password)
             }
 
         and: "a mock profile service"
@@ -117,72 +113,6 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             !urc.hasErrors()
             response.redirectedUrl == '/'
             flash.message == 'Changes Saved.'
-    }
-
-    def "Updating username via update action with command object"() {
-        given: "An existing user with an existing profile"
-            def existingUser = new User(username:'lisaturtle', passwordHash:'burger',
-                    profile: new Profile(fullName: 'screech powers', email: 'screech@sanchez.com'))
-
-        and: "A property configured command object"
-            def urc = validUserUpdateCommandObject()
-
-        and: "a mock user service"
-            controller.userService = Mock(UserService) {
-                1 * updateUser(_) >> new User(username: urc.username, passwordHash: existingUser.passwordHash)
-            }
-
-        and: "a mock profile service"
-            controller.profileService = Mock(ProfileService) {
-                1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
-            }
-
-        and: "we have the form token set"
-            def tokenHolder = SynchronizerTokensHolder.store(session)
-            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
-            params[SynchronizerTokensHolder.TOKEN_KEY] =
-                    tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
-
-        when: "the new update action is invoked"
-            controller.updateProfile urc
-
-        then: "the user is updated and the browser is redirected"
-            !urc.hasErrors()
-            response.redirectedUrl == '/'
-            flash.message == 'Changes Saved.'
-    }
-
-    def 'Updating only profile values via update action with command object'() {
-        given: 'An existing user with an existing profile'
-            def existingUser = new User(username:'louisebelcher', passwordHash:'burger',
-                    profile: new Profile(fullName: 'screech powers', email: 'lou@bobs.com'))
-
-        and: 'A property configured command object'
-            def urc = validUserUpdateCommandObject()
-
-        and: 'a mock user service'
-            controller.userService = Mock(UserService) {
-                1 * updateUser(_) >> existingUser
-            }
-
-        and: 'a mock profile service'
-            controller.profileService = Mock(ProfileService) {
-                1 * updateProfile(*_) >> new Profile(fullName:"Mocked Users", email: urc.profile.email)
-            }
-
-        and: 'we have the form token set'
-            def tokenHolder = SynchronizerTokensHolder.store(session)
-            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
-            params[SynchronizerTokensHolder.TOKEN_KEY] =
-                    tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
-
-        when: 'the new update action is invoked'
-            controller.updateProfile urc
-
-        then: 'the user is updated and the browser is redirected'
-            !urc.hasErrors()
-            response.redirectedUrl == "/"
-            flash.message == "Changes Saved."
     }
 
     def 'Updating user without a form token results in an error'() {
@@ -249,7 +179,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: 'a mock user service to return null'
             controller.userService = Mock(UserService) {
-                1 * updateUser(_) >> null
+                1 * updateUser(_ as UserUpdateCommand) >> null
             }
 
         when: 'the new update action is invoked'
@@ -293,7 +223,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
-            1 * findUser(_) >> existingUser
+            1 * findUser(_ as String) >> existingUser
         }
 
         and: "a mock security service"
@@ -324,7 +254,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
-            1 * findUser(_) >> existingUser
+            1 * findUser(_ as String) >> existingUser
         }
 
         and: "a mock security service"
@@ -356,8 +286,8 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: 'a mock user service'
         controller.userService = Mock(UserService) {
-            1 * findUser(_) >> existingUser
-            1 * getFollowedByForUser(_) >> [loggedInUser]
+            1 * findUser(_ as String) >> existingUser
+            1 * getFollowersForUser(_ as String) >> [loggedInUser]
         }
 
         and: 'a mock security service'
@@ -404,7 +334,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     def "profile action sends error when user service returns null"() {
         given: "a mock user service that returns null"
         controller.userService = Mock(UserService) {
-            1 * findUser(_) >> null
+            1 * findUser(_ as String) >> null
         }
 
         when: "we call profile action with invalid username"
@@ -419,7 +349,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     def "profile action sends error when user not found"() {
         given: "a mock user service that returns null"
         controller.userService = Mock(UserService) {
-            1 * findUser(_) >> { throw new UserException(message: 'exception!') }
+            1 * findUser(_ as String) >> null
         }
 
         when: "we call profile action with invalid username"
@@ -443,7 +373,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mocked user service to show success"
         controller.userService = Mock(UserService) {
-            1 * addToFollowing(_, _) >> true
+            1 * addToFollowing(*_) >> true
         }
 
         and: "a mocked security service"
@@ -469,7 +399,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mocked user service to show failure"
         controller.userService = Mock(UserService) {
-            1 * addToFollowing(_, _) >> false
+            1 * addToFollowing(*_) >> false
         }
 
         and: "a mocked security service"
@@ -495,7 +425,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mocked user service to throw an exception"
         controller.userService = Mock(UserService) {
-            1 * addToFollowing(_, _) >> { throw new UserException(message: 'exception!') }
+            1 * addToFollowing(*_) >> { throw new UserException(message: 'exception!') }
         }
 
         and: "a mocked security service"
@@ -523,7 +453,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mocked user service to show success"
         controller.userService = Mock(UserService) {
-            1 * removeFromFollowing(_, _) >> true
+            1 * removeFromFollowing(*_) >> true
         }
 
         and: "a mocked security service"
@@ -549,7 +479,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mocked user service to show failure"
         controller.userService = Mock(UserService) {
-            1 * removeFromFollowing(_, _) >> false
+            1 * removeFromFollowing(_ as String, _ as String) >> false
         }
 
         and: "a mocked security service"
@@ -575,7 +505,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mocked user service to throw an exception"
         controller.userService = Mock(UserService) {
-            1 * removeFromFollowing(_, _) >> { throw new UserException(message: 'exception!') }
+            1 * removeFromFollowing(_ as String, _ as String) >> { throw new UserException(message: 'exception!') }
         }
 
         and: "a mocked security service"
@@ -603,7 +533,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mocked user service to show success"
         controller.userService = Mock(UserService) {
-            1 * addToBlocking(_, _) >> true
+            1 * addToBlocking(_ as String, _ as String) >> true
         }
 
         and: "a mocked security service"
@@ -636,35 +566,5 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
     private def mockCommandObject(Class clazz) {
         clazz.newInstance()
-    }
-
-    private UserRegisterCommand validUserRegisterCommandObject() {
-        def urc = new UserRegisterCommand()
-        urc.with {
-            username = "sterling"
-            password = "duchess"
-            passwordVerify = "duchess"
-            profile = mockCommandObject ProfileCommand
-            profile.fullName = "Sterling Archer"
-            profile.email = "sterling@isis.com"
-        }
-        urc
-    }
-
-    private UserUpdateCommand validUserUpdateCommandObject() {
-        def uuc = new UserUpdateCommand()
-        uuc.with {
-            username = "sterling"
-            password = "duchess"
-            passwordVerify = "duchess"
-            profile = new ProfileCommand()
-            profile.fullName = "Sterling Archer"
-            profile.email = "sterling@isis.com"
-        }
-        uuc
-    }
-
-    private UserUpdateCommand emptyUserUpdateCommandObject() {
-        new UserUpdateCommand()
     }
 }

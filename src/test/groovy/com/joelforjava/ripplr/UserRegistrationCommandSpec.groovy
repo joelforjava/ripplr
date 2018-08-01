@@ -3,7 +3,7 @@ package com.joelforjava.ripplr
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class UserRegistrationCommandSpec extends Specification {
+class UserRegistrationCommandSpec extends Specification implements CommandObjectDataFactory {
 
     @Unroll
     def "Registering with command object for #username validates correctly"() {
@@ -15,7 +15,7 @@ class UserRegistrationCommandSpec extends Specification {
         urc.username = username
         urc.password = password
         urc.passwordVerify = passwordVerify
-        urc.profile = new ProfileCommand()
+        urc.profile = new ProfileRegisterCommand()
         urc.profile.fullName = fullName
         urc.profile.email = email
         // Other items are optional
@@ -48,7 +48,7 @@ class UserRegistrationCommandSpec extends Specification {
         uuc.username = username
         uuc.password = password
         uuc.passwordVerify = passwordVerify
-        uuc.profile = new ProfileCommand()
+        uuc.profile = new ProfileRegisterCommand()
         uuc.profile.fullName = fullName
         uuc.profile.email = email
         uuc.usernameDirty = false
@@ -78,7 +78,7 @@ class UserRegistrationCommandSpec extends Specification {
     def "Common Profile command object for #fullName validates correctly"() {
 
         given: "A mocked register command object"
-        def pc = new ProfileCommand()
+        def pc = new ProfileRegisterCommand()
 
         and: "a set of initial values"
         pc.fullName = fullName
@@ -101,4 +101,27 @@ class UserRegistrationCommandSpec extends Specification {
         "Jim"			| "NotAnEmailAddress"	| false				| "email"	        | "email.invalid"
     }
 
+    void 'UserRegisterCommand object can be coerced into User domain object'() {
+        given: 'A properly configured command object'
+        def urc = validUserRegisterCommandObject()
+
+        when: 'We coerce the object to a User object'
+        def coerced = urc as User
+
+        then: 'We get a valid User domain object'
+        coerced != null
+        coerced.username == urc.username
+        coerced.profile.fullName == urc.profile.fullName
+    }
+
+    void 'Attempting to coerce a UserRegisterCommand object into another type will cause an exception'() {
+        given: 'A properly configured command object'
+        def urc = validUserRegisterCommandObject()
+
+        when: 'We attempt to coerce the object to a Profile object'
+        def coerced = urc as Profile
+
+        then: 'We get an exception'
+        thrown ClassCastException
+    }
 }
