@@ -18,9 +18,7 @@ class BootStrap {
 
     def createSampleData() {
     	println "Creating Ripplr Sample Data"
-    	def jezza = userService.createUser('jezza','topgear')
-    	def profile = new Profile(fullName: "Jeremy Clarkson", email: "jezza@amazon.co.uk")
-    	jezza.profile = profile
+    	def jezza = new User(username: 'jezza', passwordHash: 'topgear', profile: new Profile(fullName: "Jeremy Clarkson", email: "jezza@amazon.co.uk"))
     	jezza.addToRipples(new Ripple(content:"Bacon ipsum dolor amet duis ribeye drumstick mollit turkey meatball excepteur t-bone ut short loin short ribs turducken"))
     	jezza.addToRipples(new Ripple(content:"Hamburger sunt exercitation pancetta sausage consequat shankle tongue jerky veniam bresaola ribeye"))
     	jezza.addToRipples(new Ripple(content:"Tenderloin leberkas chuck, swine tail ham hamburger brisket excepteur ea ex non fugiat"))
@@ -31,7 +29,7 @@ class BootStrap {
     	println "User jezza created with ${jezza.ripples.size()} Ripples"
 
     	def jamesmay = userService.createUser('jamesmay','topgear')
-    	profile = new Profile(fullName: 'James May', email: 'jamesmay@amazon.co.uk')
+    	def profile = new Profile(fullName: 'James May', email: 'jamesmay@amazon.co.uk')
     	jamesmay.profile = profile
     	jamesmay.addToRipples(new Ripple(content:"Et eu cupidatat pork chop"))
     	jamesmay.addToRipples(new Ripple(content:"Veniam ut cow"))

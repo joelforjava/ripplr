@@ -5,15 +5,17 @@ import grails.persistence.Entity
 @Entity
 class Profile implements Serializable {
 
-	private static final long serialVersionUID = 1
+    private static final long serialVersionUID = 1
 
-	byte[] mainPhoto
-	byte[] coverPhoto
-	String fullName
-	String about
-	String homepage
-	String email
-	String twitterProfile // URL or String?
+    private static final int ONE_KILOBYTE = 1024
+
+    byte[] mainPhoto
+    byte[] coverPhoto
+    String fullName
+    String about
+    String homepage
+    String email
+    String twitterProfile // URL or String?
 	String facebookProfile // URL or String?
 	String timezone
 	String country
@@ -28,8 +30,8 @@ class Profile implements Serializable {
     	email email: true, blank: false
     	twitterProfile url: true, nullable: true
     	facebookProfile url: true, nullable: true
-    	mainPhoto nullable: true, maxSize: 2 * 1024 * 1024
-    	coverPhoto nullable: true, maxSize: 2 * 1024 * 1024
+    	mainPhoto nullable: true, maxSize: 2 * ONE_KILOBYTE * ONE_KILOBYTE
+    	coverPhoto nullable: true, maxSize: 2 * ONE_KILOBYTE * ONE_KILOBYTE
     	country nullable: true
     	timezone nullable: true
     	skin nullable: true, blank: true, inList: ['standard', 'darkness']

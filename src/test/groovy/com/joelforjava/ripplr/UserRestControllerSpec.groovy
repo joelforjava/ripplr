@@ -206,7 +206,7 @@ class UserRestControllerSpec extends Specification {
         mockSecurityService.currentUser >> userToBeLoggedIn
         controller.springSecurityService = mockSecurityService
 
-        when: "we call ajaxBlock action"
+        when: "we call block action"
 
         controller.block existingUser.username
 

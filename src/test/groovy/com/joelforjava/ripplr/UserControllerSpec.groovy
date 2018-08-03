@@ -24,7 +24,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
-            1 * createUserAndProfile(*_) >> validUserAndProfile()
+            1 * create(_ as UserRegisterCommand) >> validUserAndProfile()
         }
 
     	and: "we have the form token set"
@@ -50,7 +50,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
-            0 * createUserAndProfile(_)
+            0 * create(_ as UserRegisterCommand)
         }
 
         when: "the new register action is invoked"
@@ -92,7 +92,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mock user service"
             controller.userService = Mock(UserService) {
-                1 * updateUser(_ as UserUpdateCommand) >> new User(username: urc.username, passwordHash: urc.password)
+                1 * update(_ as UserUpdateCommand) >> new User(username: urc.username, passwordHash: urc.password)
             }
 
         and: "a mock profile service"
@@ -179,7 +179,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: 'a mock user service to return null'
             controller.userService = Mock(UserService) {
-                1 * updateUser(_ as UserUpdateCommand) >> null
+                1 * update(_ as UserUpdateCommand) >> null
             }
 
         when: 'the new update action is invoked'
@@ -361,7 +361,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         response.status == 404
     }
 
-    /* --- ajaxFollow Specs --- */
+    /* --- follow Specs --- */
 
     def "ajaxFollow shows success when user successfully follows another user"() {
         given: "two existing users that do not follow each other"
@@ -381,9 +381,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             getCurrentUser() >> userToBeLoggedIn
         }
 
-        when: "we call ajaxFollow action"
+        when: "we call follow action"
 
-        controller.ajaxFollow existingUser.username
+        controller.follow existingUser.username
 
         then: "we see a success message"
         response.text ==~ /.*Successfully added.*/
@@ -407,9 +407,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             getCurrentUser() >> userToBeLoggedIn
         }
 
-        when: "we call ajaxFollow action"
+        when: "we call follow action"
 
-        controller.ajaxFollow existingUser.username
+        controller.follow existingUser.username
 
         then: "we see an error message"
         response.text ==~ /.*errors.*/
@@ -433,15 +433,15 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             getCurrentUser() >> userToBeLoggedIn
         }
 
-        when: "we call ajaxFollow action"
+        when: "we call follow action"
 
-        controller.ajaxFollow existingUser.username
+        controller.follow existingUser.username
 
         then: "we see an error message"
         response.text ==~ /.*errors.*/
     }
 
-    /* --- ajaxUnfollow Specs --- */
+    /* --- unfollow Specs --- */
 
     def "ajaxUnfollow shows success when user successfully unfollows another user"() {
         given: "two existing users where one follows the other"
@@ -461,9 +461,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             getCurrentUser() >> userToBeLoggedIn
         }
 
-        when: "we call ajaxUnfollow action"
+        when: "we call unfollow action"
 
-        controller.ajaxUnfollow existingUser.username
+        controller.unfollow existingUser.username
 
         then: "we see a success message"
         response.text ==~ /.*Successfully unfollowed.*/
@@ -487,9 +487,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             getCurrentUser() >> userToBeLoggedIn
         }
 
-        when: "we call ajaxUnfollow action"
+        when: "we call unfollow action"
 
-        controller.ajaxUnfollow existingUser.username
+        controller.unfollow existingUser.username
 
         then: "we see an error message"
         response.text ==~ /.*errors.*/
@@ -513,15 +513,15 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             getCurrentUser() >> userToBeLoggedIn
         }
 
-        when: "we call ajaxUnfollow action"
+        when: "we call unfollow action"
 
-        controller.ajaxUnfollow existingUser.username
+        controller.unfollow existingUser.username
 
         then: "we see an error message"
         response.text ==~ /.*errors.*/
     }
 
-    /* --- ajaxBlock Specs --- */
+    /* --- block Specs --- */
 
     def "ajaxBlock shows success when user successfully unfollows another user"() {
         given: "two existing users where one follows the other"
@@ -541,9 +541,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             getCurrentUser() >> userToBeLoggedIn
         }
 
-        when: "we call ajaxBlock action"
+        when: "we call block action"
 
-        controller.ajaxBlock existingUser.username
+        controller.block existingUser.username
 
         then: "we see a success message"
         response.text ==~ /.*Successfully blocked.*/

@@ -19,6 +19,7 @@ class UserController {
      */
     def profile(String id) {
 
+        // TODO - at some point, we will want to add a 'private' indicator to the user or profile
         def user = userService.findUser(id)
         if (!user) {
             response.sendError 404
@@ -56,18 +57,18 @@ class UserController {
     def register(UserRegisterCommand urc) {
         withForm {
         	if (urc.hasErrors()) {
-        		render view: "registration", model: [ user : urc ]
+        		render view: 'registration', model: [ user : urc ]
                 return
         	}
 
-            def user = userService.createUserAndProfile(urc)
+            def user = userService.create(urc)
             if (user.hasErrors()) {
-                render view: "registration", model: [ user : user ]
+                render view: 'registration', model: [ user : user ]
                 return
             }
 
-            flash.message = "Welcome aboard!"
-            redirect uri: "/"
+            flash.message = 'Welcome aboard!'
+            redirect uri: '/'
         }.invalidToken {
             invalidToken()
         }
@@ -96,7 +97,7 @@ class UserController {
                 return
         	}
 
-            def user = userService.updateUser(uuc)
+            def user = userService.update(uuc)
             if (user == null) {
                 response.sendError 404
                 return
@@ -116,79 +117,74 @@ class UserController {
     	}
     }
 
-    @Deprecated
-    def ajaxFollow(String usernameToFollow) {
-        log.debug "now entering ajaxFollow with username $usernameToFollow"
-        Thread.sleep(5000) // artificially slow down to test UI
+    def follow(String usernameToFollow) {
+        log.debug "now entering follow with username $usernameToFollow"
+//        Thread.sleep(5000) // artificially slow down to test UI
         try {
             def user = springSecurityService.currentUser
 
             log.debug "current logged in user is ${user.username}"
 
             def success = userService.addToFollowing user.username, usernameToFollow
-
-            if (success) {
-                render "Successfully added $usernameToFollow"
-            } else {
+            if (!success) {
                 render {
                     div(class:"errors", user.errors)
                 }
+                return
             }
+
+            render "Successfully added $usernameToFollow"
         } catch (e) {
             log.error "An error! ${e}"
             render {
                 div(class:"errors", e.message)
             }
         }
-        log.debug "now exiting ajaxFollow"
+        log.debug "now exiting follow"
     }
 
-    @Deprecated
-    def ajaxUnfollow(String usernameToUnfollow) {
-        log.debug "now entering ajaxUnfollow with username $usernameToUnfollow"
-        Thread.sleep(5000) // artificially slow down to test UI
+    def unfollow(String usernameToUnfollow) {
+        log.debug "now entering unfollow with username $usernameToUnfollow"
+//        Thread.sleep(5000) // artificially slow down to test UI
         try {
             def user = springSecurityService.currentUser
 
             log.debug "current logged in user is ${user.username}"
 
             def success = userService.removeFromFollowing user.username, usernameToUnfollow
-
-            if (success) {
-                render "Successfully unfollowed $usernameToUnfollow"
-            } else {
+            if (!success) {
                 render {
                     div(class:"errors", user.errors)
                 }
+                return
             }
+
+            render "Successfully unfollowed $usernameToUnfollow"
         } catch (e) {
             log.error "An error! ${e}"
             render {
                 div(class:"errors", e.message)
             }
         }
-        log.debug "now exiting ajaxUnfollow"
+        log.debug "now exiting unfollow"
     }
 
-    @Deprecated
-    def ajaxBlock(String usernameToBlock) {
-        Thread.sleep(5000) // artificially slow down to test UI
+    def block(String usernameToBlock) {
+//        Thread.sleep(5000) // artificially slow down to test UI
         try {
             def user = springSecurityService.currentUser
 
             log.debug "current logged in user is ${user.username}"
 
             def success = userService.addToBlocking user.username, usernameToBlock
-
-            if (success) {
-                render {
-                    div(class:"success", "Successfully blocked $usernameToBlock")
-                }
-            } else {
+            if (!success) {
                 render {
                     div(class:"errors", user.errors)
                 }
+                return
             }
+
+            render "Successfully blocked $usernameToBlock"
         } catch (e) {
             log.error "An error! ${e}"
             render {

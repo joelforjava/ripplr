@@ -8,8 +8,8 @@ class UserRestController {
     def index() { }
 
     def follow(String usernameToFollow) {
-        log.debug "now entering ajaxFollow with username $usernameToFollow"
-        Thread.sleep(5000) // artificially slow down to test UI
+        log.debug "now entering follow with username $usernameToFollow"
+//        Thread.sleep(5000) // artificially slow down to test UI
         try {
             def user = springSecurityService.currentUser
 
@@ -30,12 +30,12 @@ class UserRestController {
                 div(class:"errors", e.message)
             }
         }
-        log.debug "now exiting ajaxFollow"
+        log.debug "now exiting follow"
     }
 
     def unfollow(String usernameToUnfollow) {
-        log.debug "now entering ajaxUnfollow with username $usernameToUnfollow"
-        Thread.sleep(5000) // artificially slow down to test UI
+        log.debug "now entering unfollow with username $usernameToUnfollow"
+//        Thread.sleep(5000) // artificially slow down to test UI
         try {
             def user = springSecurityService.currentUser
 
@@ -56,11 +56,11 @@ class UserRestController {
                 div(class:"errors", e.message)
             }
         }
-        log.debug "now exiting ajaxUnfollow"
+        log.debug "now exiting unfollow"
     }
 
     def block(String usernameToBlock) {
-        Thread.sleep(5000) // artificially slow down to test UI
+//        Thread.sleep(5000) // artificially slow down to test UI
         try {
             def user = springSecurityService.currentUser
 

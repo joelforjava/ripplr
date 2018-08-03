@@ -90,12 +90,29 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         }
 
         when: 'We call the service to create the user and profile'
-        def newUser = service.createUserAndProfile(urc)
+        def newUser = service.create(urc)
 
         then: 'We get back a new user'
         !newUser.hasErrors()
         newUser.username == urc.username
         newUser.profile.fullName == urc.profile.fullName
+    }
+
+	def 'Service will return a user with errors if the user could not be saved'() {
+        given: "An improperly configured command object"
+        def urc = new UserRegisterCommand()
+        urc.with {
+            password = "duchess"
+            passwordVerify = "duchess"
+        }
+
+        when: 'We call the service to create the user and profile'
+        def newUser = service.create(urc)
+
+        then: 'We get back a user object with errors'
+        newUser.hasErrors()
+        "nullable" == newUser.errors.getFieldError("username").code
+        null == newUser.errors.getFieldError("username").rejectedValue
     }
 
     def "User properties can be updated via save method"() {
@@ -110,8 +127,8 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
     	then: "The user is updated in the database"
 
     	user.id == savedUser.id
-    	user.accountLocked == true
-    	user.passwordExpired == true
+    	user.accountLocked
+    	user.passwordExpired
 		User.count() == old(User.count())
     }
 
@@ -196,8 +213,8 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
             passwordDirty = true
         }
 
-        when: 'We call updateUser'
-        def updatedUser = service.updateUser(cmd)
+        when: 'We call update'
+        def updatedUser = service.update(cmd)
 
         then: 'We get the updated user'
         updatedUser.username == user.username
@@ -216,8 +233,8 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
             usernameDirty = true
         }
 
-        when: 'we call updateUser'
-        def updatedUser = service.updateUser cmd
+        when: 'we call update'
+        def updatedUser = service.update cmd
 
         then: 'the username property is updated'
         user.id == updatedUser.id
@@ -235,8 +252,8 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
             password = 'mynewpasswordisgreat'
         }
 
-        when: 'We call updateUser'
-        def updatedUser = service.updateUser(cmd)
+        when: 'We call update'
+        def updatedUser = service.update(cmd)
 
         then: 'We receive the original user object'
         updatedUser == user
@@ -317,17 +334,18 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         5        | 5
         10       | 10
         15       | 11
+        -30      | 5
 
     }
 
-    def "Attempting to retrieve latest users when no users exist results in an error"() {
+    def "Attempting to retrieve latest users when no users exist results in an empty list"() {
         when: "An attempt is made to retrieve the latest users when none exist"
 
-        service.retrieveLatestUsers(5)
+        def results = service.retrieveLatestUsers(5)
 
-        then: "An exception is thrown"
+        then: 'We get back an empty list'
 
-        thrown UserException
+        results.empty
     }
 
     def "Updating username saves updated value for valid usernames"() {

@@ -18,7 +18,7 @@
 					jQuery.ajax({
 						type:'POST', 
 						data: {'usernameToFollow': '${profile.user.username}'},
-						url:'/user/ajaxFollow',
+						url:'/user/follow',
 						success: function(data, status) { 
 							displaySuccess(data);
 							$("#followingButton").removeClass("btn-info nofollow")
@@ -36,7 +36,7 @@
 					jQuery.ajax({
 						type:'POST',
 						data:{'usernameToBlock': '${profile.user.username}'},
-						url:'/user/ajaxBlock',
+						url:'/user/block',
 						success: function(data,textStatus) {
 							displaySuccess(data);
 
@@ -54,7 +54,7 @@
 					jQuery.ajax({
 						type:'POST',
 						data:{'usernameToUnfollow': '${profile.user.username}'},
-						url:'/user/ajaxUnfollow',
+						url:'/user/unfollow',
 						success: function(data,textStatus) {
 							displaySuccess(data);
 							$("#unfollowButton, #optionsMenu").blur();
@@ -94,7 +94,7 @@
 									<img src="${createLink(controller: 'image', action: 'renderMainPhoto', id: profile.user.username)}" />
 								</g:if>
 								<g:else>
-									<img src="http://lorempixel.com/150/150" />
+									<asset:image src="person.jpeg" width="150" height="150" class="img-responsive"/>
 								</g:else>
 							</div>
 							<div class="panel-footer">

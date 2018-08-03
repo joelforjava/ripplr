@@ -57,7 +57,7 @@
 							<div class="media">
 								<div class="media-left">
 									<a href="${createLink(controller: 'user', action: 'profile', id: latestUser.username)}">
-										<img src="http://lorempixel.com/64/64" />
+										<asset:image src="person.jpeg" width="64" height="64" />
 									</a>
 								</div>
 								<div class="media-body">

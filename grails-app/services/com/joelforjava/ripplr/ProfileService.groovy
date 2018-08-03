@@ -40,7 +40,7 @@ class ProfileService {
      * @param flush - flush the transaction?
      * @return - the updated profile, with errors if it could not be saved, or null if profile could not be found.
      */
-	Profile updateProfile(Long userId, ProfileRegisterCommand pc, boolean flush = false) {
+    Profile updateProfile(Long userId, ProfileRegisterCommand pc, boolean flush = false) {
         def profile = Profile.where {
             user.id == userId
         }.get()

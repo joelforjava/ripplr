@@ -1,6 +1,6 @@
 <div class="profileEntry media">
 	<div class="media-left">
-		<img src="http://placehold.it/75x75" />
+		<asset:image src="person.jpeg" width="75" height="75"/>
 	</div>
 	<div class="media-body">
 		<h4 class="media-heading"><a href="/ripplr/user/profile/${user.username}">${user?.profile?.fullName}</a></h4>

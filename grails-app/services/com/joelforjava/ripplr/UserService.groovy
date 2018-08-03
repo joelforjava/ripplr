@@ -40,19 +40,13 @@ class UserService {
      * @return a list of at most the numLatest users.
      * @throws UserException if no users are found
      */
-    List retrieveLatestUsers(int numLatest) {
+    List retrieveLatestUsers(int numLatest = 5) {
         int numToReturn = 5
         if (numLatest > 0) {
             numToReturn = numLatest
         }
 
-        def users = User.list(max: numToReturn, sort: 'dateCreated', order: 'desc')
-
-        if (!users) {
-            throw new UserException(message: 'Latest users not found!')
-        }
-
-        users
+        User.list(max: numToReturn, sort: 'dateCreated', order: 'desc')
     }
 
     // Do bear in mind that this is used by Bootstrap as of now
@@ -78,8 +72,15 @@ class UserService {
         user
     }
 
-    User createUserAndProfile(UserRegisterCommand userRegistration) {
-        create(userRegistration, true)
+    User update(UserUpdateCommand cmd) {
+        def user = findUser cmd.username
+        if (cmd.passwordDirty) {
+            return this.saveUser(user.id, cmd.username, cmd.password)
+        } else if (cmd.usernameDirty) {
+            // TODO - if the username is dirty, then the 'findUser' call above will always return null!
+            return this.updateUsername(user.id, cmd.username)
+        }
+        user
     }
 
     protected User saveUser(Long userId, String username, String passwordHash, boolean accountLocked = false,
@@ -115,17 +116,6 @@ class UserService {
 
     }
 
-    User updateUser(UserUpdateCommand cmd) {
-        def user = findUser cmd.username
-        if (cmd.passwordDirty) {
-            return this.saveUser(user.id, cmd.username, cmd.password)
-        } else if (cmd.usernameDirty) {
-            // TODO - if the username is dirty, then the 'findUser' call above will always return null!
-            return this.updateUsername(user.id, cmd.username)
-        }
-        user
-    }
-
     int onlineUserCount() {
         return User.count()
     }
@@ -141,10 +131,8 @@ class UserService {
             def following = user.following
             log.debug "${user.username} is following $following"
             return success
-        } else {
-            throw new UserException(message: "Either requested user to follow is invalid or that user is equal to the user requesting to add", user: user)
         }
-        return false
+        throw new UserException(message: 'Either requested user to follow is invalid or that user is equal to the user requesting to add', user: user)
     }
 
     boolean removeFromFollowing(String username, String nameToUnfollow) {
@@ -155,12 +143,10 @@ class UserService {
             user.removeFromFollowing userToRemove
             def success = user.save()
             def following = user.following
-            log.debug "${user.username} is now following $following"
+            log.debug "${user.username} is no longer following $following"
             return success
-        } else {
-            throw new UserException(message: "Either requested user to remove from following is invalid or user is attempting to unfollow himself", user: user)
         }
-        return false
+        throw new UserException(message: 'Either requested user to remove from following is invalid or user is attempting to unfollow himself', user: user)
     }
 
     boolean addToBlocking(String username, String nameToBlock) {
@@ -174,11 +160,13 @@ class UserService {
             user.addToBlocking userToBlock
             def success = user.save()
             return success
-        } else {
-            throw new UserException(message: "Either requested user to block is invalid or that user is equal to the user requesting to block", user: user)
         }
-        return false
+        throw new UserException(message: 'Either requested user to block is invalid or that user is equal to the user requesting to block', user: user)
     }
+
+//    boolean blockUser(String username, String usernameToBlock) {
+//        removeFromFollowing(username, usernameToBlock) && removeFromFollowing(usernameToBlock, username) && addToBlocking(username, usernameToBlock)
+//    }
 
     def getFollowersForUser(String username) {
         def user = findUser username
