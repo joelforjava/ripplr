@@ -124,4 +124,15 @@ class UserRegistrationCommandSpec extends Specification implements CommandObject
         then: 'We get an exception'
         thrown ClassCastException
     }
+
+    void 'The validUserRegisterCommandObject method returns a valid UserRegisterCommand object'() {
+        given: 'We call validUserRegisterCommandObject'
+        def urc = validUserRegisterCommandObject()
+
+        when: 'We attempt to validate the object'
+        boolean isValid = urc.validate()
+
+        then: 'The object comes back as valid'
+        isValid
+    }
 }
