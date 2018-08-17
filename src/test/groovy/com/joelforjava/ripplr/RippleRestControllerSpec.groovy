@@ -48,15 +48,13 @@ class RippleRestControllerSpec extends Specification {
         def message = 'Engaging new content'
 
         and: 'A mocked springSecurityService'
-        def mockSecurityService = Mock(SpringSecurityService) {
+        controller.springSecurityService = Mock(SpringSecurityService) {
             getCurrentUser() >> [username: username]
         }
-        controller.springSecurityService = mockSecurityService
 
-        def mockRippleService = Mock(RippleService) {
+        controller.rippleService = Mock(RippleService) {
             1 * createRipple(username, message) >> new Ripple(content: message)
         }
-        controller.rippleService = mockRippleService
 
         when: 'I invoke the save action with a JSON payload'
         request.json = '{"message":"' + message + '"}'

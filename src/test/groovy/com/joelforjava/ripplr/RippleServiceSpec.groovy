@@ -1,17 +1,19 @@
 package com.joelforjava.ripplr
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-@TestFor(RippleService)
-@Mock([User, Ripple])
-class RippleServiceSpec extends Specification {
+class RippleServiceSpec extends Specification implements ServiceUnitTest<RippleService>, DataTest {
 
 	def user
+
+	def setupSpec() {
+		mockDomains(User, Ripple)
+	}
 
     def setup() {
     	user = new User(username: "Sterling", passwordHash: "HashedPasswd").save(flush: true)

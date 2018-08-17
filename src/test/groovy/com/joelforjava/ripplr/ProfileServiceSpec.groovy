@@ -4,7 +4,7 @@ import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-class ProfileServiceSpec extends Specification implements ServiceUnitTest<ProfileService>, DataTest {
+class ProfileServiceSpec extends Specification implements ServiceUnitTest<ProfileService>, DataTest, DomainDataFactory {
 
 	def user
 
@@ -19,9 +19,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def 'Updating profile properties via updateProfile method'() {
         given: "An existing profile"
 
-        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com", user: user)
-        user.profile = existingProfile
-        user.save(flush: true, failOnError: true)
+        def existingProfile = validProfileWithUser(user).save(failOnError: true, flush: true)
 
         when: "We attempt to change values"
         def savedProfile = service.updateProfile(user.id,
@@ -59,9 +57,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def 'Attempting to update a profile with invalid values will prevent the domain object from being saved and we will have errors'() {
         given: "An existing profile"
 
-        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com", user: user)
-        user.profile = existingProfile
-        user.save(flush: true, failOnError: true)
+        def existingProfile = validProfileWithUser(user).save(failOnError: true, flush: true)
 
         when: "We attempt to change values"
         def savedProfile = service.updateProfile(user.id,
@@ -79,9 +75,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def "Service can retrieve profile of a user with a valid user ID"() {
         given: "An existing profile for a user"
 
-        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com", user: user)
-        user.profile = existingProfile
-        user.save(flush: true)
+        def existingProfile = validProfileWithUser(user).save(failOnError: true, flush: true)
 
         when: "We attempt to retrieve the profile with the user ID"
 
@@ -106,9 +100,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def "Service can retrieve profile of a user with a valid username"() {
         given: "An existing profile for a user"
 
-        def existingProfile = new Profile(fullName: "Archer", email: "archer@isis.com", user: user)
-        user.profile = existingProfile
-        user.save(flush: true)
+        def existingProfile = validProfileWithUser(user).save(failOnError: true, flush: true)
 
         when: "We attempt to retrieve the profile with the username"
 

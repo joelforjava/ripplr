@@ -5,7 +5,7 @@ import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
-class RippleControllerSpec extends Specification implements ControllerUnitTest<RippleController>, DataTest {
+class RippleControllerSpec extends Specification implements ControllerUnitTest<RippleController>, DataTest, DomainDataFactory {
 
     def setupSpec() {
 		mockDomains(User, Ripple)
@@ -15,14 +15,14 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
 	def "getting the global timeline view"() {
 		given: "a user with posts"
 
-		def user = new User(username: 'bob_belcher', passwordHash: 'mvemjsnu')
+		def user = validUserWithUsername('bob_belcher')
 
 		user.addToRipples( new Ripple(content: 'a very important ripple'))
 		user.addToRipples( new Ripple(content: 'this one is not as important'))
 		user.save(failOnError: true)
 
 		and: "A logged in user"
-		def loggedInUser = new User(username: 'gene_belcher', passwordHash: 'nomnomburger').save(failOnError: true)
+		def loggedInUser = validUserWithUsername('gene_belcher')
 
 		and: "a mocked user service"
 		controller.userService = Mock(UserService) {
@@ -30,9 +30,9 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
 		}
 
 		and: "a mocked security service"
-		def mockSecurityService = Mock(SpringSecurityService)
-		mockSecurityService.getCurrentUser() >> loggedInUser
-		controller.springSecurityService = mockSecurityService
+		controller.springSecurityService = Mock(SpringSecurityService) {
+            1 * getCurrentUser() >> loggedInUser
+		}
 
 		when: 'we invoke the global action'
 		def model = controller.global()
@@ -48,7 +48,7 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
     def "getting timeline of a valid user"() {
     	given: "a user with posts"
 
-    	def user = new User(username: 'bob_belcher', passwordHash: 'mvemjsnu')
+        def user = validUserWithUsername('bob_belcher')
 
     	user.addToRipples( new Ripple(content: 'a very important ripple'))
     	user.addToRipples( new Ripple(content: 'this one is not as important'))
@@ -93,16 +93,16 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
     def "getting dashboard of a valid user"() {
     	given: "a user with posts"
 
-    	def user = new User(username: 'bob_belcher', passwordHash: 'mvemjsnu')
+        def user = validUserWithUsername('bob_belcher')
 
     	user.addToRipples( new Ripple(content: 'a very important ripple'))
     	user.addToRipples( new Ripple(content: 'this one is not as important'))
     	user.save(failOnError: true)
 
     	and: "a mocked security service"
-    	def mockSecurityService = Mock(SpringSecurityService)
-    	mockSecurityService.getCurrentUser() >> user
-    	controller.springSecurityService = mockSecurityService
+        controller.springSecurityService = Mock(SpringSecurityService) {
+            1 * getCurrentUser() >> user
+        }
 
     	when: "we invoke dashboard action"
     	controller.dashboard()
@@ -121,7 +121,7 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
     	params.id = "bob_belcher"
 
     	and: "a user"
-    	def user = new User(username: 'bob_belcher', passwordHash: 'mvemjsnu')
+        def user = validUserWithUsername('bob_belcher')
     	user.save(failOnError: true)
 
     	when: "we invoke index action"
