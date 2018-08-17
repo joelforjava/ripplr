@@ -83,6 +83,22 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
     }
 
+    def 'Calling registration when a user is already logged in will redirect to home'() {
+        given: 'We have mocked the springSecurityService'
+        controller.springSecurityService = Mock(SpringSecurityService) {
+            1 * isLoggedIn() >> true
+        }
+
+        when: 'We attempt to view the registration page'
+        controller.registration()
+
+        then: 'We are redirected to home'
+        response.redirectedUrl == "/"
+
+        and: 'Receive a message stating we are already registered'
+        flash.message
+    }
+
     /* --- Update Specs --- */
 
     // TODO - rethink and refactor these tests to make sure they are LOGICAL! (See UserServiceSpec ignored test)

@@ -11,27 +11,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
 		mockDomains(User, Profile)
     }
 
-    void 'Valid user data will allow creation of new user'() {
-    	given: 'New user values'
-
-		String username = 'james'
-		String passwordHash = 'hashedpass'
-		boolean accountExpired = false
-		boolean accountLocked = false
-		boolean passwordExpired = false
-
-		when: 'A new user is created by the service'
-
-		def newUser = service.createUser(username, passwordHash, accountLocked, accountExpired, passwordExpired)
-
-		then: 'The user is returned by the service'
-
-		newUser.username == username
-		newUser.accountExpired == accountExpired
-		User.count() == old(User.count()) + 1
-    }
-
-    void 'Null values for booleans in user creation will cause an exception'() {
+    void 'Attempting to call a method that no longer exists will cause an exception'() {
     	given: 'New user values'
 
 		String username = 'james'
@@ -45,36 +25,6 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
 
 		thrown groovy.lang.MissingMethodException
 
-    }
-
-    def "Calling alternate create method defaults security properties to false"() {
-    	given: "New user values"
-
-		String username = "james"
-		String passwordHash = "hashedpass"
-
-		when: "A new user is created by the service via alternate method"
-
-		def newUser = service.createUser(username, passwordHash)
-
-		then: "The user is returned by the service with security defaults of false"
-
-        !newUser.accountExpired
-        !newUser.accountLocked
-        !newUser.passwordExpired
-
-    }
-
-    def 'Attempting to save a user with an empty password results in an unsaved user object'() {
-    	when: "An attempt is made to create a user with no password"
-
-    	def user = service.createUser("gene", "")
-
-    	then: "the user has errors"
-
-    	user.hasErrors()
-		"nullable" == user.errors.getFieldError("passwordHash").code
-		null == user.errors.getFieldError("passwordHash").rejectedValue
     }
 
     def 'Service can successfully create a user with profile'() {

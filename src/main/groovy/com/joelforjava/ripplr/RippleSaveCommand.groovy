@@ -5,7 +5,7 @@ import grails.validation.Validateable
 /**
  * Created by joel on 3/21/17.
  */
-class RippleDetail implements Validateable {
+class RippleSaveCommand implements Validateable {
     String message
 
     static constraints = {

@@ -1,6 +1,6 @@
 package com.joelforjava.ripplr
 
-import grails.rest.RestfulController
+
 import org.springframework.http.HttpStatus
 
 class RippleRestController {
@@ -16,7 +16,7 @@ class RippleRestController {
         respond Ripple.list()
     }
 
-    def save(RippleDetail ripple) {
+    def save(RippleSaveCommand ripple) {
 
         if (!ripple.hasErrors()) {
             def user =  springSecurityService.currentUser

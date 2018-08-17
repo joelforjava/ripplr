@@ -4,8 +4,6 @@ import com.joelforjava.ripplr.*
 
 class BootStrap {
 
-	def userService
-
     def init = { servletContext ->
     	environments {
     		development {
@@ -28,7 +26,7 @@ class BootStrap {
 
     	println "User jezza created with ${jezza.ripples.size()} Ripples"
 
-    	def jamesmay = userService.createUser('jamesmay','topgear')
+    	def jamesmay = createUser('jamesmay','topgear')
     	def profile = new Profile(fullName: 'James May', email: 'jamesmay@amazon.co.uk')
     	jamesmay.profile = profile
     	jamesmay.addToRipples(new Ripple(content:"Et eu cupidatat pork chop"))
@@ -40,7 +38,7 @@ class BootStrap {
 
     	println "User jamesmay created with ${jamesmay.ripples.size()} Ripples"
 
-    	def hammond = userService.createUser('hammond','topgear')
+    	def hammond = createUser('hammond','topgear')
     	profile = new Profile(fullName: 'Richard Hammond', email: 'hammond@amazon.co.uk')
     	hammond.profile = profile
     	hammond.addToRipples(new Ripple(content:"Et sed excepteur brisket venison biltong adipisicing"))
@@ -55,5 +53,15 @@ class BootStrap {
     	println "Number of users created: ${User.count()}"
 
     }
+
+	User createUser(String username, String passwordHash, boolean accountLocked = false, boolean accountExpired = false,
+					boolean passwordExpired = false) {
+
+		def user = new User(username: username, passwordHash: passwordHash,
+				accountLocked: accountLocked, accountExpired: accountExpired,
+				passwordExpired: passwordExpired)
+		user.save()
+		user
+	}
 
 }

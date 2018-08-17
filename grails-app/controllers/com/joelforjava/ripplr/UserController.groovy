@@ -48,7 +48,12 @@ class UserController {
         return [profile: user.profile, followedBy: followers, currentLoggedInUser: currentUser, loggedInIsFollowing: isLoggedInFollowing]
     }
 
-    def registration() { }
+    def registration() {
+        if (springSecurityService.loggedIn) {
+            flash.message = 'You are already a registered user!'
+            redirect uri: '/'
+        }
+    }
 
     /**
      * Performs user registration

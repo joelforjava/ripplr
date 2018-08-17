@@ -49,20 +49,6 @@ class UserService {
         User.list(max: numToReturn, sort: 'dateCreated', order: 'desc')
     }
 
-    // Do bear in mind that this is used by Bootstrap as of now
-    @Deprecated // use create(UserRegisterCommand) instead
-    User createUser(String username, String passwordHash, boolean accountLocked = false, boolean accountExpired = false,
-    			 boolean passwordExpired = false) {
-
-        // TODO-generate hashed password here and save it
-        // remove encryption logic from the User domain class!
-    	def user = new User(username: username, passwordHash: passwordHash, 
-    						accountLocked: accountLocked, accountExpired: accountExpired, 
-    						passwordExpired: passwordExpired)
-        user.save()
-        user
-    }
-
     User create(UserRegisterCommand command, boolean flush = false) {
         def user = command as User
         if (!user?.save(flush: flush)) {
