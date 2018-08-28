@@ -9,8 +9,8 @@ class Profile implements Serializable {
 
     private static final int ONE_KILOBYTE = 1024
 
-    byte[] mainPhoto
-    byte[] coverPhoto
+    Image mainPhoto
+    Image coverPhoto
     String fullName
     String about
     String homepage

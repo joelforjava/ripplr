@@ -2,6 +2,7 @@ package com.joelforjava.ripplr
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
 /**
@@ -30,9 +31,9 @@ class ImageControllerSpec extends Specification {
     	controller.springSecurityService = mockSecurityService
 */
     	and: "a property configured and mocked command object"
-        def iuc = mockCommandObject ImageUploadCommand
+        ImageUploadCommand iuc = mockCommandObject ImageUploadCommand
         iuc.type = ImageType.PROFILE
-        iuc.photo = [0, 0, 0, 0, 0, 0] as byte[]
+        iuc.photo = populateMultipartFile 'filename.jpeg', [1, 0, 1] as byte[]
         iuc.username = existingUser.username
 
         and: "it has been validated"
@@ -48,4 +49,9 @@ class ImageControllerSpec extends Specification {
         //flash.message == "Changes Saved."
 
     }
+
+    def populateMultipartFile(String filename, byte[] content) {
+        new GrailsMockMultipartFile(filename, filename, 'content-type', content)
+    }
+
 }

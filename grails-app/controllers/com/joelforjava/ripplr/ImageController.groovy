@@ -9,10 +9,10 @@ class ImageController {
 		def user = User.findByUsername iuc.username
     	switch (iuc.type) {
     		case ImageType.PROFILE:
-    			uploadProfilePhoto(user.profile, iuc.photo)
+    			uploadProfilePhoto(user.profile, iuc as Image)
     			break
     		case ImageType.COVER:
-    			uploadCoverPhoto(user.profile, iuc.photo)
+    			uploadCoverPhoto(user.profile, iuc as Image)
     			break
     		default:
     			// do nothing
@@ -25,11 +25,12 @@ class ImageController {
 
 	}
 
-    def renderMainPhoto(String username) {
-    	def user = User.findByUsername username
+    def renderMainPhoto(String id) {
+    	def user = User.findByUsername id
     	if (user?.profile?.mainPhoto) {
-    		response.setContentLength user.profile.mainPhoto.size()
-    		response.outputStream.write user.profile.mainPhoto
+//    		response.setContentLength user.profile.mainPhoto.size()
+//    		response.outputStream.write user.profile.mainPhoto
+			render file: user.profile.mainPhoto.bytes, contentType: user.profile.mainPhoto.contentType
     	} else {
     		response.sendError 404
     	}
@@ -47,11 +48,3 @@ class ImageController {
     	}
     }
 }
-
-class ImageUploadCommand {
-	byte[] photo
-	ImageType type // this would designate 'profile' vs. 'cover', etc.
-	String username // could probably get by with using spring security service
-}
-
-enum ImageType { PROFILE, COVER }

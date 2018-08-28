@@ -6,8 +6,8 @@ import grails.validation.Validateable
  * Created by joel on 3/18/17.
  */
 class ProfileRegisterCommand implements Validateable {
-    byte[] mainPhoto
-    byte[] coverPhoto
+    ImageUploadCommand mainPhoto
+    ImageUploadCommand coverPhoto
     String fullName
     String about
     String homepage
@@ -23,7 +23,11 @@ class ProfileRegisterCommand implements Validateable {
     }
 
     transient Profile toProfile() {
-        new Profile(this.properties)
+        def profile = new Profile(fullName: this.fullName, about: this.about, homepage: this.homepage, email: this.email,
+                                  twitterProfile: this.twitterProfile, facebookProfile: this.facebookProfile,
+                                  timezone: this.timezone, country: this.country, skin: this.skin,
+                                  mainPhoto: this.mainPhoto as Image, coverPhoto: this.coverPhoto as Image)
+        profile
     }
 
     transient asType(Class target) {
