@@ -82,47 +82,44 @@
 	</head>
 	<body>
 		<div class="container">
-			<nav class="navbar navbar-inverse">
+			<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 				<div class="navbar-header">
-		          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-		            <span class="sr-only">Toggle navigation</span>
-		            <span class="icon-bar"></span>
-		            <span class="icon-bar"></span>
-		            <span class="icon-bar"></span>
-		          </button>
-		          <a class="navbar-brand" href="/">Ripplr</a>
+					<a class="navbar-brand" href="/">Ripplr</a>
+					<button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle Navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
 		        </div>
 				<div id="navbar" class="navbar-collapse collapse">
-		          <ul class="nav navbar-nav">
+		          <ul class="navbar-nav ml-auto">
 		          	<!-- need to add code to set active -->
-		            <li class="active"><a href="#"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+		            <li class="active nav-item text-white"><a class="nav-link" href="/"><span class="glyphicon glyphicon-home"></span> Home</a></li>
 		            <sec:ifLoggedIn>
-		            	<li><a href="${createLink(controller: 'ripple', action: 'dashboard')}">Your Dashboard</a></li>
+		            	<li class="nav-item text-white-50"><a class="nav-link" href="${createLink(controller: 'ripple', action: 'dashboard')}">Your Dashboard</a></li>
 		            </sec:ifLoggedIn>
 		            <!-- move these to the footer?
 		            <li><a href="#about">About</a></li>
 		            <li><a href="#contact">Contact</a></li>
 		            -->
 		            <sec:ifLoggedIn>
-			            <li class="dropdown">
-			              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> <sec:username/>'s Profile <span class="caret"></span></a>
-			              <ul class="dropdown-menu" role="menu">
-			                <li><g:link controller="user" action="update">Settings</g:link></li>
-							<li><g:link controller='logout'>Logout</g:link></li>
-			                <li><a href="#">Something else here</a></li>
-			                <li class="divider"></li>
-			                <li class="dropdown-header">Nav header</li>
-			                <li><a href="#">Separated link</a></li>
-			                <li><a href="#">One more separated link</a></li>
-			              </ul>
+			            <li class="nav-item dropdown">
+			              <a href="#" id="dropdown-user-menu" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> <sec:username/>'s Profile <span class="caret"></span></a>
+			              <div class="dropdown-menu" aria-labelledby="dropdown-user-menu" role="menu">
+			                <g:link class="dropdown-item" controller="user" action="update">Settings</g:link>
+							<g:link class="dropdown-item" controller='logout'>Logout</g:link>
+			                <a class="dropdown-item" href="#">Something else here</a>
+			                <div class="dropdown-divider"></div>
+			                <div class="dropdown-header">Nav header</div>
+			                <a class="dropdown-item" href="#">Separated link</a>
+			                <a class="dropdown-item" href="#">One more separated link</a>
+			              </div>
 			            </li>
 		            </sec:ifLoggedIn>
 		            <sec:ifLoggedIn>
-						<li><g:link elementId="logout" controller='logout'><span class="glyphicon glyphicon-log-out"></span> Logout</g:link></li>
+						<li class="nav-item text-white-50"><g:link class="nav-link" elementId="logout" controller='logout'><span class="glyphicon glyphicon-log-out"></span> Logout</g:link></li>
 		            </sec:ifLoggedIn>
 		            <sec:ifNotLoggedIn>
- 						<li>
- 							<a class="pull-right" data-toggle="modal" data-target="#signInBox"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+ 						<li class="nav-item text-white-50">
+ 							<a class="nav-link pull-right" data-toggle="modal" data-target="#signInBox"><span class="glyphicon glyphicon-log-in"></span> Login</a>
  						</li>
  		            </sec:ifNotLoggedIn>
 		          </ul>
@@ -131,22 +128,22 @@
 			<g:layoutBody/>
 			<div class="footer" role="contentinfo"></div>
             <sec:ifNotLoggedIn>
-				<div class="modal fade" id="signInBox" tabindex="-1">
-					<div class="modal-dialog">
+				<div class="modal fade" id="signInBox" tabindex="-1" role="dialog">
+					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
+								<h5 class="modal-title">Sign In to Ripplr</h5>
 								<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-								<h4 class="modal-title">Sign In to Ripplr</h4>
 							</div>
 							<div class="modal-body">
 								<div>
 									<ul class="nav nav-pills">
-										<li class="active"><a href="#signInTab" data-toggle="tab" data-caption="Sign In to Ripplr">Sign In</a></li>
-										<li><a href="#signUpTab" data-toggle="tab" data-caption="Sign Up for Ripplr">Sign Up</a></li>
+										<li class="nav-item"><a class="nav-link active" href="#signInTab" data-toggle="tab" data-caption="Sign In to Ripplr">Sign In</a></li>
+										<li class="nav-item"><a class="nav-link" href="#signUpTab" data-toggle="tab" data-caption="Sign Up for Ripplr">Sign Up</a></li>
 									</ul>
 									<div class="tab-content">
 										<div class="tab-pane active" id="signInTab">
-											<div style="margin-top: 20px;" id="signInAlert" class="hidden alert alert-info"></div>
+											<div style="margin-top: 20px;" id="signInAlert" class="d-none alert alert-info"></div>
 											<form style="padding-top: 5px;" id="signInForm" name="signInForm" action="${request.contextPath}/login/authenticate" method="POST">
 												<div class="form-group">
 													<input type="text" class="form-control" name="username" id="username" placeholder="User Name"/>
@@ -163,7 +160,7 @@
 													<input type="text" class="form-control" id="yourName" placeholder="Your Full Name"/>
 												</div>
 												<!-- etc. look at existing form -->
-												<button type="button" class="btn btn-success btn-block" id="doLogin">Sign Up</button>
+												<button type="button" class="btn btn-success btn-block" id="doSignup">Sign Up</button>
 											</form>
 										</div>
 									</div>

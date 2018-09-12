@@ -8,7 +8,7 @@
 		</g:javascript>
 	</head>
 	<body>
-		<div class="page-header">
+		<div class="border-bottom mb-4">
 			<h1>Global Timeline</h1>
 		</div>
 		<g:if test="${flash.message}">
@@ -48,20 +48,20 @@
 				</div>
 			</div>
 			<div class="col-sm-4 col-md-3" id="featuredUsers">
-				<div class="panel panel-info">
-					<div class="panel-heading">
-						<h3 class="panel-title">Latest Users</h3>
+				<div class="card">
+					<div class="card-header bg-info">
+						<h4 class="card-title text-white bg-info">Latest Users</h4>
 					</div>
-					<div class="panel-body">
+					<div class="card-body border border-info">
 						<g:each var="latestUser" in="${latestUsers}">
-							<div class="media">
-								<div class="media-left">
+							<div class="media mb-4">
+								<div class="mr-3">
 									<a href="${createLink(controller: 'user', action: 'profile', id: latestUser.username)}">
 										<asset:image src="person.jpeg" width="64" height="64" />
 									</a>
 								</div>
 								<div class="media-body">
-									<h4 class="media-heading">${latestUser.username}</h4>
+									<h5 class="media-heading">${latestUser.username}</h5>
 								</div>
 							</div>
 						</g:each>

@@ -1,5 +1,5 @@
 <div class="profileEntry media">
-	<div class="media-left">
+	<div class="mr-3">
 		<asset:image src="person.jpeg" width="75" height="75"/>
 	</div>
 	<div class="media-body">

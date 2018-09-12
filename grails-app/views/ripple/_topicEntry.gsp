@@ -1,7 +1,7 @@
-<div class="topicEntry panel panel-default">
-	<div class="topicText panel-body">
+<div class="topicEntry card mb-4">
+	<div class="topicText card-body">
 		<div class="media">
-			<div class="media-left">
+			<div class="mr-3">
 				<a href="${g.createLink(controller: 'user', action: 'profile', id: ripple.user.username)}">
 					<asset:image src="person.jpeg" width="64" height="64"/>
 				</a>
@@ -12,5 +12,5 @@
 			</div>
 		</div>
 	</div>
-	<div class="topicDate panel-footer"><rip:timeAgo date="${ripple.dateCreated}" /></div>
+	<div class="topicDate card-footer"><rip:timeAgo date="${ripple.dateCreated}" /></div>
 </div>

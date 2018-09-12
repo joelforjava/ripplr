@@ -8,7 +8,7 @@
 		</g:javascript>
 	</head>
 	<body>
-		<div class="page-header">
+		<div class="border-bottom mb-4">
 			<h1>Timeline for ${ user.profile ? user.profile.fullName : user.username }</h1>
 		</div>
 		<g:if test="${flash.message}">
@@ -18,12 +18,12 @@
 			</div>
 		</g:if>
 		<div class="row">
-			<div class="col-md-8 col-md-offset-2" id="newPost">
+			<div class="col-md-8 offset-md-2" id="newPost">
 				<g:render template="addTopicForm" />
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-8 col-md-offset-2" id="topicArea">
+			<div class="col-md-8 offset-md-2" id="topicArea">
 				<div class="spinner" style="display: none">
 				  <div class="rect1"></div>
 				  <div class="rect2"></div>
