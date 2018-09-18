@@ -1,13 +1,14 @@
 package com.joelforjava.ripplr
 
 import grails.validation.Validateable
+import groovy.transform.ToString
 
 /**
  * Created by joel on 3/18/17.
  */
 class ProfileRegisterCommand implements Validateable {
-    ImageUploadCommand mainPhoto
-    ImageUploadCommand coverPhoto
+    ImageRegisterCommand mainPhoto
+    ImageRegisterCommand coverPhoto
     String fullName
     String about
     String homepage

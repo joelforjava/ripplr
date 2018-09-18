@@ -14,7 +14,20 @@ class UserRegisterCommand implements Validateable {
 
     static constraints = {
         importFrom User
-        profile validator: { val, obj -> val.validate() }
+        profile validator: { val, obj, errors ->
+            if (!val.validate()) {
+                val.errors.allErrors.each { err ->
+                    def fieldName = err.arguments ? err.arguments[0] : err.properties['field']
+                    if (fieldName) {
+                        String errorCode = "profile.${err.code}"
+                        if (val.hasProperty(fieldName)) {
+                            errorCode = "profile.${err.arguments[0]}.${err.code}"
+                        }
+                        errors.rejectValue("profile.${err.properties['field']}", errorCode, err.arguments, "Invalid value for {0}")
+                    }
+                }
+            }
+        }
         password size: 6..150, blank: false,
                 validator: { passwd, urc ->
                     return passwd != urc.username
