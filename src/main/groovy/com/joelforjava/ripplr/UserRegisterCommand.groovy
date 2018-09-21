@@ -1,6 +1,7 @@
 package com.joelforjava.ripplr
 
 import grails.validation.Validateable
+import org.springframework.validation.Errors
 
 /**
  * Created by joel on 3/18/17.
@@ -14,7 +15,7 @@ class UserRegisterCommand implements Validateable {
 
     static constraints = {
         importFrom User
-        profile validator: { val, obj, errors ->
+        profile validator: { ProfileRegisterCommand val, UserRegisterCommand obj, Errors errors ->
             if (!val.validate()) {
                 val.errors.allErrors.each { err ->
                     def fieldName = err.arguments ? err.arguments[0] : err.properties['field']
