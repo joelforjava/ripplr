@@ -104,6 +104,7 @@
 			            <li class="nav-item dropdown">
 			              <a href="#" id="dropdown-user-menu" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> <sec:username/>'s Profile <span class="caret"></span></a>
 			              <div class="dropdown-menu" aria-labelledby="dropdown-user-menu" role="menu">
+							  <g:link class="dropdown-item" controller="message" action="index">Messages</g:link>
 			                <g:link class="dropdown-item" controller="user" action="update">Settings</g:link>
 							<g:link class="dropdown-item" controller='logout'>Logout</g:link>
 			                <a class="dropdown-item" href="#">Something else here</a>

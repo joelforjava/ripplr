@@ -46,6 +46,10 @@ class BootStrap {
     	hammond.addToRipples(new Ripple(content:"Turkey shankle laboris minim"))
     	hammond.addToRipples(new Ripple(content:"Pork belly tail porchetta cillum enim ribeye cupidatat voluptate"))
     	hammond.addToRipples(new Ripple(content:"Minim anim ball tip ribeye in voluptate exercitation meatloaf enim"))
+		hammond.addToSentMessages(new Message(recipient: jezza, dateSent: new Date(), subject: 'No Subject Required', content: "meatloaf sausage turducken"))
+		hammond.addToSentMessages(new Message(recipient: jezza, dateSent: new Date(), subject: 'No Subject', content: "brisket drumstick"))
+		hammond.addToSentMessages(new Message(recipient: jezza, dateSent: new Date(), subject: 'Last One', content: "hamburger hamburger cow"))
+		hammond.addToSentMessages(new Message(recipient: jamesmay, dateSent: new Date(), subject: 'A Message', content: "hamburger hamburger cow meatballs"))
     	hammond.save()
 
     	println "User hammond created with ${hammond.ripples.size()} Ripples"

@@ -25,4 +25,12 @@ trait DomainDataFactory {
     Profile validProfileWithUser(User user) {
         new Profile(fullName:"Mocked Name", email:"mock@mocking.com", user: user)
     }
+
+    Message validMessageWithSenderAndRecipient(User sender, User recipient) {
+        new Message(sender: sender, recipient: recipient, subject: 'Valid subject', content: 'Valid content', dateSent: new Date())
+    }
+
+    Message validMessage() {
+        validMessageWithSenderAndRecipient(validUserWithUsername('sender@sender.com'), validUserWithUsername('recipient@recipient.com'))
+    }
 }

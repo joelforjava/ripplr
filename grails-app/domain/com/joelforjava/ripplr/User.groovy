@@ -6,7 +6,6 @@ import grails.persistence.Entity
 
 @Entity
 @EqualsAndHashCode(includes='username')
-@ToString(includes='username', includeNames=true, includePackage=false)
 class User implements Serializable {
 
 	private static final long serialVersionUID = 1
@@ -48,7 +47,8 @@ class User implements Serializable {
 	}
 
 	static hasOne = [ profile: Profile ]
-	static hasMany = [ ripples: Ripple, tags: Tag, following: User, blocking: User ]
+	static hasMany = [ ripples: Ripple, tags: Tag, following: User, blocking: User, sentMessages: Message, receivedMessages: Message ]
+	static mappedBy = [ receivedMessages: 'recipient', sentMessages: 'sender' ]
 
 	static transients = ['springSecurityService']
 
