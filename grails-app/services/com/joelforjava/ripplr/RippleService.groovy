@@ -11,13 +11,22 @@ class RippleException extends RuntimeException {
 @Transactional
 class RippleService {
 
-	// Need to allow for tags
 	Ripple createRipple(String username, String content) {
 		def user = User.findByUsername username
 
 		if (user) {
+
 			def ripple = new Ripple(content: content)
 
+            def tagNames = extractHashTags content
+            if (tagNames) {
+                tagNames.each { tagVal ->
+                    // TODO - sync new tag names with existing tags
+                    def tag = new Tag(name: "$tagVal", user: user)
+                    user.addToTags tag
+                    ripple.addToTags tag
+                }
+            }
 			user.addToRipples ripple
 
 			if (!ripple.validate() || !user.save(flush: true)) {
@@ -34,38 +43,7 @@ class RippleService {
 		throw new RippleException(message: "Invalid user reference")
 	}
 
-	Ripple createRipple(String username, String content, List tagNames) {
-		def user = User.findByUsername username
-		
-		if (user) {
-			def ripple = new Ripple(content: content)
 
-			if (tagNames) {
-				tagNames.each { tagVal ->
-					// probably need to look up tag first
-					def tag = new Tag(name: "$tagVal")
-					user.addToTags tag
-					ripple.addToTags tag
-				}
-			}
-			user.addToRipples ripple
-
-			// this used to be !ripple.validate() || !user.save(flush: true)
-			// can't really recall why I needed both.
-			if (!user.save(flush: true)) {
-				throw new RippleException(message: "Invalid content for ripple", ripple: ripple)
-			} else {
-				return ripple
-			}
-
-			// how do we handle responses?
-			// are we going to create 'threaded' ripples that link ripples
-			// or will the response only reference a user?
-		}
-
-		throw new RippleException(message: "Invalid user reference")
-
-	}
 	def deleteRipple(id) {
 		def ripple = Ripple.get(id)
 
@@ -85,4 +63,19 @@ class RippleService {
 		def user = User.findByUsername username
 		def latestRipples = Ripple.findAllByUser(user, [sort: 'dateCreated', order: 'desc', max: maxLatest])
 	}
+
+    private List<String> extractHashTags(String content) {
+        def tags = []
+        if (content?.contains("#")) {
+            // Regex from: https://stackoverflow.com/questions/8451846/actual-twitter-format-for-hashtags-not-your-regex-not-his-code-the-actual
+            def findHashtags = (content =~ /#(\w*[0-9a-zA-Z]+\w*[0-9a-zA-Z])/)
+
+            findHashtags.each { result ->
+                if (result.size() >= 2) {
+                    tags << result[1]
+                }
+            }
+        }
+        tags
+    }
 }

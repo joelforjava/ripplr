@@ -216,7 +216,7 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
         def mockRipple = new Ripple(content: "Mock ripple #rocks", user: new User(username: "jeeves"))
     	and: "a mock ripple service"
     	controller.rippleService = Mock(RippleService) {
-            1 * createRipple(_, _, _) >> mockRipple
+            1 * createRipple(_, _) >> mockRipple
             1 * retrieveLatestRipplesForUser(_, _) >> [mockRipple]
     	}
 
@@ -246,7 +246,7 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
         def mockRipple = new Ripple(content: "Mock ripple #rocks", user: new User(username: "jeeves"))
         and: "a mock ripple service"
         controller.rippleService = Mock(RippleService) {
-            1 * createRipple(_, _, _) >> mockRipple
+            1 * createRipple(_, _) >> mockRipple
             1 * retrieveLatestRipplesForUser(_, _) >> [mockRipple]
         }
 

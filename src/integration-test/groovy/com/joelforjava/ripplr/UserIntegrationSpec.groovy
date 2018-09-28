@@ -185,4 +185,21 @@ class UserIntegrationSpec extends Specification {
 		User.get(gene.id).username == gene.username
 	}
 
+    void 'Adding two tags with the same name will result in only one tag being saved'() {
+        given: 'We have a user'
+        def user = new User(username: 'lars-ulrich', passwordHash: 'guiestz').save(failOnError: true)
+
+        and: 'We have two tags with the same name value'
+        def tag1 = new Tag(name: 'Apples', user: user)
+        def tag2 = new Tag(name: 'Apples', user: user)
+
+        when: 'We add each of them to the tag collection'
+        user.addToTags tag1
+        user.addToTags tag2
+
+        then: 'The tag collection will only show one tag'
+        user.tags.size() == 1
+        user.tags[0].name == tag1.name
+    }
+
 }

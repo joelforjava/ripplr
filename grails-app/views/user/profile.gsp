@@ -213,6 +213,16 @@
 						<p>No one!</p>
 					</div>
 				</div>
+                <div class="card mb-4">
+                    <div class="card-header bg-info">
+                        <h5 class="card-title text-white">${profile.user.username}'s Tags</h5>
+                    </div>
+                    <div class="card-body">
+                        <g:each in="${profile.user.tags}" var="tag">
+                            <p>${tag}</p>
+                        </g:each>
+                    </div>
+                </div>
 			</div>
 		</div>
 	    <sec:ifLoggedIn>

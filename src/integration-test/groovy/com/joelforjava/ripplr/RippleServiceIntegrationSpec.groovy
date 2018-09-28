@@ -15,16 +15,15 @@ class RippleServiceIntegrationSpec extends Specification {
 	def "ripple service saves valid content to a ripple object and tags to tag objects"() {
 		given: "valid content and tags"
 
-		def content = "My first ripple"
-		def tags = ['first','awesome','lookatme']
-		
+		def content = "My #first ripple #awesome #lookatme"
+
 		and: "a valid user"
 		
 		def user = new User(username: "Sterling", passwordHash: "HashedPasswd").save(flush: true)
 
 		when: "we call createRipple on the ripple service"
 
-		rippleService.createRipple user.username, content, tags
+		rippleService.createRipple user.username, content
 
 		then: "we see a ripple has been created"
 
@@ -40,15 +39,14 @@ class RippleServiceIntegrationSpec extends Specification {
 		given: "valid content"
 
 		def content = "My first ripple"
-		def tags = []
-		
+
 		and: "a valid user"
 
 		def user = new User(username: "Sterling", passwordHash: "HashedPasswd").save(flush: true)
 
 		when: "we call createRipple on the ripple service"
 
-		rippleService.createRipple user.username, content, tags
+		rippleService.createRipple user.username, content
 
 		then: "we see a ripple has been created"
 
@@ -64,8 +62,7 @@ class RippleServiceIntegrationSpec extends Specification {
 	def "ripple service throws exception when invalid username is used"() {
 		given: "valid content and tags"
 
-		def content = "Hey, another ripple!"
-		def tags = ['hashtagz']
+		def content = "Hey, another ripple! #hashtagz"
 
 		and: "an invalid username"
 
@@ -73,7 +70,7 @@ class RippleServiceIntegrationSpec extends Specification {
 
 		when: "we call createRipple on the ripple service"
 
-		rippleService.createRipple invalidUsername, content, tags
+		rippleService.createRipple invalidUsername, content
 
 		then: "an exception is thrown"
 

@@ -67,16 +67,7 @@ class RippleController {
     	try {
     		if (content) {
     			log.debug "content appears valid. Attempting to create"
-				def tags = []
-				content.tokenize().each { word ->	// Note: this will not allow for 'multi-word' tags as described in the regex
-					// Regex courtesy of: http://stackoverflow.com/questions/11846975/javascript-regex-for-matching-twitter-like-hashtags
-					if (word ==~ /\S*#(?:\[[^\]]+\]|\S+)/) {
-						println "A hashtag! -- $word"
-						tags << word
-					}
-					//else println "$word does not appear to be a hashtag"
-				}
-	    		def newRipple = rippleService.createRipple user.username, content, tags
+	    		def newRipple = rippleService.createRipple user.username, content
                 // this returns the latest ripples for a specific user to be re-displayed
                 // on a page. What happens when the user is on the global timeline?
                 // perhaps we should only return the newly created ripple and prepend it
