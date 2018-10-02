@@ -21,9 +21,11 @@ class RippleService {
             def tagNames = extractHashTags content
             if (tagNames) {
                 tagNames.each { tagVal ->
-                    // TODO - sync new tag names with existing tags
                     def tag = new Tag(name: "$tagVal", user: user)
                     user.addToTags tag
+                    // At some point, you'll need to write your own functionality
+                    // for ripple.addToTags. As-is, a new tag is ALWAYS created
+                    // even if it's a pre-existing tag
                     ripple.addToTags tag
                 }
             }

@@ -9,6 +9,9 @@ class BootStrap {
     		development {
     			if (!User.count()) createSampleData()
     		}
+            test {
+                if (!User.count()) createSampleData()
+            }
     	}
     }
     def destroy = {

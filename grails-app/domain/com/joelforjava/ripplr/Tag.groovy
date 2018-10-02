@@ -20,9 +20,8 @@ class Tag {
     }
 
     static searchable = {
-        //only = ['name']
         name boost: 4.0
-        //user parent: true, reference: true
+        //user reference: true
         //spellCheck "include"
     }
 

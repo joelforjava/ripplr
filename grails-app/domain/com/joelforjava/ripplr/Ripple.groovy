@@ -1,7 +1,9 @@
 package com.joelforjava.ripplr
 
 import grails.persistence.Entity
+import groovy.transform.EqualsAndHashCode
 
+//@EqualsAndHashCode(includes=['id', 'content', 'user'])
 @Entity
 class Ripple {
 
@@ -18,6 +20,7 @@ class Ripple {
     static searchable = {
 		content boost: 2.0
     	user parent: true, reference: true
+		tags component: true
     	//spellCheck "include"
     }
 

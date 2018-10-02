@@ -12,6 +12,12 @@ class MessageIntegrationSpec extends Specification {
     }
 
     def cleanup() {
+        def messages = Message.list()
+        if (messages) {
+            messages.each { message ->
+                message.delete()
+            }
+        }
     }
 
     void 'A user cannot be both the sender and recipient of a message'() {
@@ -94,7 +100,7 @@ class MessageIntegrationSpec extends Specification {
             new Message(sender: linda, recipient: bob, dateSent: new Date(), content: 'Hello there').save(failOnError: true)
         }
 
-        when: 'We call list to find recipient 1\'s messages'
+        when: 'We call list to find all messages'
         def messages = Message.list()
 
         then: 'We get back the expected messages'
