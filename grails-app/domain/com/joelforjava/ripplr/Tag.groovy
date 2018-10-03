@@ -21,7 +21,7 @@ class Tag {
 
     static searchable = {
         name boost: 4.0
-        //user reference: true
+        user reference: false
         //spellCheck "include"
     }
 

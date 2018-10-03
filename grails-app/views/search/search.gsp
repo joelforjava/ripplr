@@ -30,7 +30,7 @@
 							<g:if test="${highlights && highlights[i]}">
 								<div class="searchContent card-body">${highlights[i]?.content?.fragments[0]}</div>
 							</g:if>
-							<div class="searchFrom card-footer">From: <g:link controller="users" action="${result.user.username}">${result.user.username}</g:link></div>
+							<div class="searchFrom card-footer">From: <g:link controller="users" action="${result.user?.username}">${result.user?.username}</g:link></div>
 						</div>
 					</g:each>
 				</div>

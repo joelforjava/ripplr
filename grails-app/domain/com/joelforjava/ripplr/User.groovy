@@ -67,9 +67,8 @@ class User implements Serializable {
 	}
 
 	static searchable = {
-		//except = ["passwordHash"]
 		only = ["username"]
-		//ripples component:true
+		ripples component: true
 	}
 
 }
