@@ -61,7 +61,7 @@ class RippleController {
 
     def addAjax(String content) {
     	log.debug "Attempting to add $content Ripple via AJAX"
-        Thread.sleep(5000) // artificially slow down to test UI
+        // Thread.sleep(5000) // artificially slow down to test UI
     	def user = springSecurityService.currentUser
 
     	try {

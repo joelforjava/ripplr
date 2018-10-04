@@ -26,8 +26,8 @@ if (Environment.isDevelopmentMode() && targetDir) {
 }
 
 logger 'com.joelforjava.ripplr', DEBUG, ['STDOUT'], false
-logger 'grails.plugins.elasticsearch', DEBUG, ['STDOUT'], false
-logger 'org.elasticsearch', DEBUG, ['STDOUT'], false
+logger 'grails.plugins.elasticsearch', WARN, ['STDOUT'], false
+logger 'org.elasticsearch', WARN, ['STDOUT'], false
 
 root(ERROR, ['STDOUT'])
 
