@@ -3,14 +3,17 @@
 		<label for="username">User Name</label>
 		<g:textField class="form-control" name="username" value="${user?.username}" />
 	</div>
-	<div class="form-group">
-		<label for="password">Password</label>
-		<g:passwordField class="form-control" name="password" />
-	</div>
-	<div class="form-group">
-		<label for="passwordVerify">Password (verify)</label>
-		<g:passwordField class="form-control" name="passwordVerify" />
-	</div>
+	%{-- This form is currently only used by the update page. The system doesn't actually update the password,
+	     so removing from the page for now. Once the User domain objects have been updated with the latest Spring
+	     Security best practices, then add password updating. (Password updating is messy with the current code)--}%
+	%{--<div class="form-group">--}%
+		%{--<label for="password">Password</label>--}%
+		%{--<g:passwordField class="form-control" name="password" />--}%
+	%{--</div>--}%
+	%{--<div class="form-group">--}%
+		%{--<label for="passwordVerify">Password (verify)</label>--}%
+		%{--<g:passwordField class="form-control" name="passwordVerify" />--}%
+	%{--</div>--}%
 	<div class="form-group">
 		<label for="profile.fullName">Full Name</label>
 		<g:textField class="form-control" name="profile.fullName" value="${user?.profile?.fullName}" />
