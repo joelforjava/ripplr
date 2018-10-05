@@ -1,39 +1,62 @@
 package com.joelforjava.ripplr
 
+import grails.converters.JSON
+import org.springframework.http.HttpStatus
+
 class SearchController {
 
-    //def index() { }
+    SearchService searchService
+
+    def index() { }
 	
-	def search() {
-		def query = params.q
-		log.debug "Query received: $query"
-		if (!query) {
-			return [:]
-		}
-		try {
-			params.highlight = {
-				field 'content'
-				field 'user.username'
-				preTags '<strong>'
-				postTags '</strong>'
-			}
-			def result = Ripple.search(query, params)
-			if (!result) {
-				log.debug "no results found"
-			} else {
-				log.debug "Results found: $result"
-				/* */
-				def highlighted = result.highlight
-				log.debug "Here are the highlighted: ${highlighted}"
-				result?.searchResults?.eachWithIndex { hit, index ->
-					def fragments = highlighted[index].content?.fragments
-					println fragments?.size() ? fragments[0] : ''
-				}
-				/* */
-			}
-			return [searchResult : result, highlights: result?.highlight]
-		} catch (e) {
-			return [searchError : true]
-		}
-	}
+    def results() {
+        def query = params.q
+        log.debug "Query received: $query"
+        if (!query) {
+            return [:]
+        }
+
+        def highlighter = {
+            field 'content'
+            preTags '<strong>'
+            postTags '</strong>'
+        }
+
+        try {
+            def searchResult = searchService.searchRipples(query, [highlight:  highlighter])
+            if (!searchResult) {
+                log.debug "no results found"
+                return
+            }
+
+            /* For some reason, the highlighted List<Map> is a list of empty maps */
+            def highlighted = searchResult.highlight
+            log.debug "Here are the highlighted: ${highlighted}"
+            searchResult?.searchResults?.eachWithIndex { hit, index ->
+                def fragments = highlighted[index].content?.fragments
+                log.debug fragments?.size() ? fragments[0] : ''
+            }
+            /* */
+
+            request.withFormat {
+                form multipartForm {
+                    respond(searchResult, [model: [searchResult:searchResult, highlights: searchResult?.highlight, q: query]])
+                }
+                '*' { render searchResult as JSON }
+            }
+        } catch (e) {
+            log.error(e)
+            internalError()
+        }
+    }
+
+    protected void internalError() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.search.error', args: [message(code: 'query.label', default: 'Query'), params.q])
+                redirect(uri: '/search', method: 'GET')
+            }
+            '*' { render status: HttpStatus.INTERNAL_SERVER_ERROR }
+        }
+    }
 }

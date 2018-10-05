@@ -14,7 +14,7 @@ class MarshallerRegistrar {
     @PostConstruct
     void registerMarshallers() {
         JSON.registerObjectMarshaller(Ripple) { Ripple r ->
-            return [ id: r.id, published: dateFormatter.format(r.dateCreated),
+            return [ id: r.id, published: r.dateCreated ? dateFormatter.format(r.dateCreated) : new Date(), //hack to prevent issues with ES results. Can remove when switching to GSON Views
                      message: r.content, user: r.user.username, tags: r.tags.collect { it.name }]
         }
     }

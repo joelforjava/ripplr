@@ -69,9 +69,9 @@ class UserRegistrationCommandSpec extends Specification implements CommandObject
         "james_het"| "password" | "password"        | "Jim Hetfield"| "james@metallica.com" | true              | null              | null
         "dave_must"| "guitars"  | "guitars"         | "Dave"        | "dave@megadeth.com"   | true              | null              | null
         "dr"       | "password" | "password"        | "Doc"         | "doc@derp.com"        | false             | "username"        | "size.toosmall"
-        "jeeves"   | "password" | "password"        | ""            | "jeeves@metallica.com"| false             | "profile"         | "validator.invalid"
-        "kirk_ham" | "password" | "password"        | "Kirk Hammett"| ""                    | false             | "profile"         | "validator.invalid"
-        "j4mes_h3t"| "guest12"  | "guest12"         | "Jim"         | "NotAnEmailAddress"   | false             | "profile"         | "validator.invalid"
+        "jeeves"   | "password" | "password"        | ""            | "jeeves@metallica.com"| false             | "profile.fullName"| "profile.fullName.blank"
+        "kirk_ham" | "password" | "password"        | "Kirk Hammett"| ""                    | false             | "profile.email"   | "profile.email.blank"
+        "j4mes_h3t"| "guest12"  | "guest12"         | "Jim"         | "NotAnEmailAddress"   | false             | "profile.email"   | "profile.email.email.invalid"
     }
 
     @Unroll

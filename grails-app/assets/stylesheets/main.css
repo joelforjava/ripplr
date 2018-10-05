@@ -107,6 +107,18 @@ body {
     padding-top: 4.5rem;
 }
 
+/* courtesy of https://bootsnipp.com/snippets/featured/bootstrap-4-search-bar */
+
+.form-control-borderless {
+    border: none;
+}
+
+.form-control-borderless:hover, .form-control-borderless:active, .form-control-borderless:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
 /* Glyphicons */
 
 @font-face {

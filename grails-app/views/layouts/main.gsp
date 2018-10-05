@@ -7,7 +7,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<title>Ripplr &#9729; Welcome to Ripplr</title>
+		<title><g:layoutTitle default="Ripplr &#9729; Welcome to Ripplr"/></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">
 		<link rel="apple-touch-icon" href="${assetPath(src: 'apple-touch-icon.png')}">
@@ -94,6 +94,7 @@
 		          	<!-- need to add code to set active -->
 		            <li class="active nav-item text-white"><a class="nav-link" href="/"><span class="glyphicon glyphicon-home"></span> Home</a></li>
 		            <sec:ifLoggedIn>
+						<li class="nav-item text-white-50"><g:link class="nav-link" controller='search'><span class="glyphicon glyphicon-search"></span> Search</g:link></li>
 		            	<li class="nav-item text-white-50"><a class="nav-link" href="${createLink(controller: 'ripple', action: 'dashboard')}">Your Dashboard</a></li>
 		            </sec:ifLoggedIn>
 		            <!-- move these to the footer?
