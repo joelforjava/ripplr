@@ -11,11 +11,14 @@ class ImageRegisterCommand implements Validateable {
         description nullable: true
         photo nullable: true, validator: { val, obj ->
             if (val == null) {
-                return true     // true is valid, for now. at some point, it will be required.
+                return true
             }
 
-            if (val.empty) {    // validation always fails here if there is no file uploaded
-                return true    // TODO having it return TRUE instead of FALSE until I figure out the issue
+            if (val.empty) {
+                if (val.originalFilename) {
+                    return false
+                }
+                return true
             }
 
             ['jpeg', 'jpg', 'png'].any { extension ->

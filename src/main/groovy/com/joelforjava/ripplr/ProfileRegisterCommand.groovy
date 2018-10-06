@@ -22,8 +22,8 @@ class ProfileRegisterCommand implements Validateable {
 
     static constraints = {
         importFrom Profile
-//        mainPhoto nullable: true, validator: photoValidator.curry('mainPhoto')
-//        coverPhoto nullable: true, validator: photoValidator.curry('coverPhoto')
+        mainPhoto nullable: true, validator: photoValidator.curry('mainPhoto')
+        coverPhoto nullable: true, validator: photoValidator.curry('coverPhoto')
     }
 
     static photoValidator = { propertyName, val, obj, errors ->

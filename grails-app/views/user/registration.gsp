@@ -63,13 +63,13 @@
                     <div class="form-group">
                         <div class="custom-file">
                             <label class="custom-file-label" for="profile.mainPhoto.photo">Main Photo</label>
-                            <input type="file" class="custom-file-input" name="profile.mainPhoto.photo" />
+                            <input type="file" class="custom-file-input" name="profile.mainPhoto.photo" value="${user?.profile?.mainPhoto?.photo}"/>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="custom-file">
                             <label class="custom-file-label" for="profile.coverPhoto.photo">Cover Photo</label>
-                            <input type="file" class="custom-file-input" name="profile.coverPhoto.photo" />
+                            <input type="file" class="custom-file-input" name="profile.coverPhoto.photo" value="${user?.profile?.coverPhoto?.photo}" />
                         </div>
                     </div>
 					<div class="form-group">
