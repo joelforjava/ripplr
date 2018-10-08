@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Message</title>
+        <title><g:message code="message.label" default="Message"/></title>
         <meta name="layout" content="main">
         <g:javascript>
             // TODO - refactor all JS!
@@ -51,7 +51,8 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="media">
-                                <asset:image src="person.jpeg" width="64" height="64" class="mr-3" alt="Profile picture for User ${message.sender.username}"/>
+                                <asset:image src="person.jpeg" width="64" height="64" class="mr-3"
+                                             alt="${message(code:'mainPhoto.description.label', args:[message.sender.username])}"/>
                                 <div class="media-body">
                                     <h6 class="mt-0">${message.sender.username}</h6>
                                     TODO - User details might go here?
@@ -69,8 +70,12 @@
                         </div>
                         <div class="card-footer">
                             <div class="float-right">
-                                <a href="${g.createLink(action: 'index')}" class="btn btn-secondary">Go Back to Messages</a>
-                                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#sendMessageBox">Reply</a>
+                                <a href="${g.createLink(action: 'index')}" class="btn btn-secondary">
+                                    <g:message code="message.return.to.index.label" default="Go Back to Messages"/>
+                                </a>
+                                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#sendMessageBox">
+                                    <g:message code="message.reply.label" default="Reply"/>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -78,32 +83,7 @@
             </div>
         </div>
         <sec:ifLoggedIn>
-            <div class="modal fade" id="sendMessageBox" tabindex="-1" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title">Send Message</h5>
-                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div style="margin-top: 20px;" id="sendMessageAlert" class="d-none alert alert-info"></div>
-                            <g:form useToken="false" name="sendMessageForm" controller="message" action="save" method="POST">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="subject" id="subject" value="RE: ${message.subject}"/>
-                                </div>
-                                <div class="form-group">
-                                    <g:textArea class="form-control" name="content"/>
-                                </div>
-                                <input type="hidden" name="recipientUsername" id="recipientUsername" value="${message.sender.username}"/>
-                                <button type="button" class="btn btn-success btn-block" id="doMessageSend">Send</button>
-                            </g:form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <g:render template="sendMessageModal" model='[subject: "RE: ${message.subject}", recipient: "${message.sender.username}"]'/>
         </sec:ifLoggedIn>
     </body>
 </html>

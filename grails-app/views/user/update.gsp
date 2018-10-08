@@ -1,11 +1,11 @@
 <html>
 	<head>
-		<title>Update Profile</title>
+		<title><g:message code="update.form.title.label" default="Update Profile"/></title>
 		<meta name="layout" content="main">
 	</head>
 	<body>
         <div class="border-bottom mb-4">
-            <h1>Update Your Profile</h1>
+            <h1><g:message code="update.form.headline.label" default="Update Your Profile"/></h1>
         </div>
 		<div class="row">
 			<g:hasErrors>
@@ -22,7 +22,7 @@
 				<g:uploadForm useToken="true" action="updateProfile">
 					<g:render template="userForm" model="[user: user]" />
 					<fieldset class="buttons">
-						<g:submitButton class="btn btn-primary" name="update" value="Update!" />
+						<g:submitButton class="btn btn-primary" name="update" value="${message(code: 'update.form.update.button.label', default: 'Update!')}" />
 					</fieldset>
 				</g:uploadForm>
 			</div>

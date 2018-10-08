@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Your Messages</title>
+        <title><g:message code="messages.your.messages.label" default="Your Messages"/></title>
         <meta name="layout" content="main"/>
     </head>
     <body>
-        <h2>Your Messages</h2>
+        <h2><g:message code="messages.your.messages.label" default="Your Messages"/></h2>
         <div class="container">
             <div class="row">
                 <div class="col-sm-12">
@@ -14,9 +14,9 @@
                             <table class="table table-striped table-hover table-sm">
                                 <thead class="bg-primary">
                                     <tr>
-                                        <th scope="col">Sender</th>
-                                        <th scope="col">Subject</th>
-                                        <th scope="col">Date</th>
+                                        <th scope="col"><g:message code="message.sender.label" default="Sender"/></th>
+                                        <th scope="col"><g:message code="message.subject.label" default="Subject"/></th>
+                                        <th scope="col"><g:message code="message.dateReceived.label" default="Date"/></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -36,7 +36,7 @@
                                             </td>
                                             %{--<td>${message.sender.username}</td>--}%
                                             <td><div class="mt-3"><a href="${g.createLink(action: 'show', id: message.id)}">${message.subject}</a></div></td>
-                                            <td><div class="mt-3"><rip:timeAgo date="${message.dateSent}" /></div></td>
+                                            <td><div class="mt-3"><g:formatDate date="${message.dateSent}" type="datetime" style="MEDIUM"/></div></td>
                                         </tr>
                                     </g:each>
                                 </tbody>

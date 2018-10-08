@@ -1,11 +1,11 @@
 <html>
 	<head>
-		<title>New User Registration</title>
+		<title><g:message code="register.form.title.label" default="New User Registration"/></title>
 		<meta name="layout" content="main">
 	</head>
 	<body>
 		<div class="border-bottom mb-4">
-			<h1>New User Registration</h1>
+			<h1><g:message code="register.form.headline.label" default="New User Registration"/></h1>
 		</div>
 		<g:hasErrors>
 			<div class="errors alert alert-danger">
@@ -21,27 +21,27 @@
 			<g:uploadForm useToken="true" action="register">
 				<fieldset class="form">
 					<div class="form-group">
-						<label for="username">User Name</label>
+						<label for="username"><g:message code="register.form.username.label" default="User Name"/></label>
 						<g:textField class="form-control" name="username" value="${user?.username}" />
 					</div>
 					<div class="form-group">
-						<label for="password">Password</label>
+						<label for="password"><g:message code="register.form.password.label" default="Password"/></label>
 						<g:passwordField class="form-control" name="password" />
 					</div>
 					<div class="form-group">
-						<label for="passwordVerify">Password (verify)</label>
+						<label for="passwordVerify"><g:message code="register.form.password.verify.label" default="Password (verify)"/></label>
 						<g:passwordField class="form-control" name="passwordVerify" />
 					</div>
 					<div class="form-group">
-						<label for="profile.fullName">Full Name</label>
+						<label for="profile.fullName"><g:message code="register.form.fullname.label" default="Full Name"/></label>
 						<g:textField class="form-control" name="profile.fullName" value="${user?.profile?.fullName}" />
 					</div>
 					<div class="form-group">
-						<label for="profile.about">About Yourself</label>
+						<label for="profile.about"><g:message code="register.form.about.label" default="About Yourself"/></label>
 						<g:textArea class="form-control" name="profile.about" value="${user?.profile?.about}" />
 					</div>
 					<div class="form-group">
-						<label for="profile.email">Email</label>
+						<label for="profile.email"><g:message code="register.form.email.label" default="Email"/></label>
 						<g:textField class="form-control" name="profile.email" value="${user?.profile?.email}" />
 						<g:hasErrors bean="${user?.profile}" field="email">
 							<g:eachError bean="${user?.profile}" field="email">
@@ -50,30 +50,30 @@
 						</g:hasErrors>
 					</div>
 					<div class="form-group">
-						<label for="profile.country">Country</label>
+						<label for="profile.country"><g:message code="register.form.country.label" default="Country"/></label>
 						<g:countrySelect class="form-control"
 										 name="profile.country"
-                                         noSelection="['':'Choose your country...']"
+                                         noSelection="['': 'Choose your country...']"
                                          value="${user?.profile?.country}"/>
 					</div>
 					<div class="form-group">
-						<label for="profile.timezone">Time Zone</label>
+						<label for="profile.timezone"><g:message code="register.form.timezone.label" default="Time Zone"/></label>
 						<g:timeZoneSelect class="form-control" name="profile.timezone" value="${user?.profile?.timezone ? TimeZone.getTimeZone(user?.profile?.timezone as String) : ''}"/>
 					</div>
                     <div class="form-group">
                         <div class="custom-file">
-                            <label class="custom-file-label" for="profile.mainPhoto.photo">Main Photo</label>
+                            <label class="custom-file-label" for="profile.mainPhoto.photo"><g:message code="register.form.mainPhoto.label" default="Main Photo"/></label>
                             <input type="file" class="custom-file-input" name="profile.mainPhoto.photo" value="${user?.profile?.mainPhoto?.photo}"/>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="custom-file">
-                            <label class="custom-file-label" for="profile.coverPhoto.photo">Cover Photo</label>
+                            <label class="custom-file-label" for="profile.coverPhoto.photo"><g:message code="register.form.coverPhoto.label" default="Cover Photo"/></label>
                             <input type="file" class="custom-file-input" name="profile.coverPhoto.photo" value="${user?.profile?.coverPhoto?.photo}" />
                         </div>
                     </div>
 					<div class="form-group">
-						<label for="profile.facebookProfile">Facebook Profile</label>
+						<label for="profile.facebookProfile"><g:message code="register.form.facebook.profile.label" default="Facebook Profile"/></label>
 						<div class="input-group">
                             <div class="input-group-prepend">
                                 <div class="input-group-text"><span class="glyphicon glyphicon-thumbs-up"></span></div>
@@ -82,7 +82,7 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="profile.twitterProfile">Twitter Profile</label>
+						<label for="profile.twitterProfile"><g:message code="register.form.twitter.profile.label" default="Twitter Profile"/></label>
 						<div class="input-group">
                             <div class="input-group-prepend">
                                 <div class="input-group-text"><span class="glyphicon glyphicon-thumbs-up"></span></div>
@@ -93,7 +93,7 @@
 
 				</fieldset>
 				<fieldset class="buttons">
-					<g:submitButton class="btn btn-primary" name="register" value="Register Now!" />
+					<g:submitButton class="btn btn-primary" name="register" value="${message(code: 'register.form.register.button.label', default: 'Register Now!')}" />
 				</fieldset>
 			</g:uploadForm>
 		</div>

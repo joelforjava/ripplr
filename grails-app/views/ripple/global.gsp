@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Global Ripplr Timeline</title>
+		<title><g:message code="global.timeline.page.title.label" default="Global Ripplr Timeline"/></title>
 		<meta name="layout" content="main" />
 		<style type="text/css" media="screen">			
 		</style>
@@ -9,11 +9,11 @@
 	</head>
 	<body>
 		<div class="border-bottom mb-4">
-			<h1>Global Timeline</h1>
+			<h1><g:message code="global.timeline.headline.label" default="Global Timeline"/></h1>
 		</div>
 		<g:if test="${flash.message}">
 			<div class="flash alert alert-success alert-dismissible">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span ara-hidden="true">&times;</span></button>
+				<button type="button" class="close" data-dismiss="alert" aria-label="${message(code: 'close.label', default: 'Close')}"><span ara-hidden="true">&times;</span></button>
 				${flash.message}
 			</div>
 		</g:if>
@@ -25,9 +25,15 @@
 			</sec:ifLoggedIn>
 			<sec:ifNotLoggedIn>
 				<div class="col-sm-12 col-md-4" id="didYouKnow">
-					<h1>What is Ripplr?</h1>
-					<p>Ripplr is a site to create ripples of discussion among friends, colleagues, and other interesting people.</p>
-					<p><a class="btn btn-primary btn-lg" href="${createLink(controller: 'user', action: 'registration')}" role="button">Join Ripplr</a></p>
+					<h1><g:message code="global.timeline.ripplr.subheadline.label" default="What is Ripplr?"/></h1>
+					<p><g:message code="global.timeline.ripplr.brief.description.label"
+								  default="Ripplr is a site to create ripples of discussion among friends, colleagues, and other interesting people."/></p>
+					<p>
+                        <a class="btn btn-primary btn-lg"
+                           href="${createLink(controller: 'user', action: 'registration')}" role="button">
+                            <g:message code="join.ripplr.button.label" default="Join Ripplr"/>
+                        </a>
+                    </p>
 				</div>
 			</sec:ifNotLoggedIn>
 			<div class="col-sm-8 col-md-5" id="topicArea">
@@ -40,7 +46,7 @@
 				</div>
 				<div id="allTopics">
 					<g:render template="topicEntry" collection="${ripples}" var="ripple" />
-					<nav aria-label="Ripple Navigation">
+					<nav aria-label="${message(code: 'ripple.list.aria.navigation.label', default: 'Ripple Navigation')}">
 						<span class="pagination">
 							<g:paginate class="btn" action="global" total="${rippleCount}" max="5" />
 						</span>
@@ -50,7 +56,9 @@
 			<div class="col-sm-4 col-md-3" id="featuredUsers">
 				<div class="card">
 					<div class="card-header bg-info">
-						<h4 class="card-title text-white bg-info">Latest Users</h4>
+						<h4 class="card-title text-white bg-info">
+                            <g:message code="global.timeline.latest.users.label" default="Latest Users"/>
+                        </h4>
 					</div>
 					<div class="card-body border border-info">
 						<g:each var="latestUser" in="${latestUsers}">

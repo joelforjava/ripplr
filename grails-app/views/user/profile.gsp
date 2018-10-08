@@ -1,7 +1,11 @@
 <html>
 	<head>
-		<title>Ripplr &#9729; Profile for ${profile.fullName}</title>
-		<meta name="layout" content="main" />
+        <meta name="layout" content="main" />
+        <g:set var="fullName" value="${profile.fullName}"/>
+        <g:set var="username" value="${profile.user.username}"/>
+        <g:set var="entityName" value="${message(code: 'profile.label', default: 'Profile')}"/>
+        <g:set var="forLabel" value="${message(code: 'for.label', default: 'for')}"/>
+		<title><g:message code="profile.title.label" args="${[fullName]}"/></title>
 		<style>
 			.mainPhoto {
 				border: 1px dotted gray;
@@ -17,7 +21,7 @@
 					$("#followingButton").html('<div class="loader">Loading...</div>')
 					jQuery.ajax({
 						type:'POST', 
-						data: {'usernameToFollow': '${profile.user.username}'},
+						data: {'usernameToFollow': '${username}'},
 						url:'/user/follow',
 						success: function(data, status) { 
 							displaySuccess(data);
@@ -35,7 +39,7 @@
 				$("#blockButton").click(function() {
 					jQuery.ajax({
 						type:'POST',
-						data:{'usernameToBlock': '${profile.user.username}'},
+						data:{'usernameToBlock': '${username}'},
 						url:'/user/block',
 						success: function(data,textStatus) {
 							displaySuccess(data);
@@ -53,7 +57,7 @@
 					$(".dropdown-menu").blur();
 					jQuery.ajax({
 						type:'POST',
-						data:{'usernameToUnfollow': '${profile.user.username}'},
+						data:{'usernameToUnfollow': '${username}'},
 						url:'/user/unfollow',
 						success: function(data,textStatus) {
 							displaySuccess(data);
@@ -127,16 +131,16 @@
 						<div class="card">
 							<div class="card-body">
 								<g:if test='${profile.mainPhoto}'>
-									<img src="${createLink(controller: 'image', action: 'renderMainPhoto', id: profile.user.username)}" />
+									<img src="${createLink(controller: 'image', action: 'renderMainPhoto', id: username)}" />
 								</g:if>
 								<g:else>
 									<asset:image src="person.jpeg" width="150" height="150" class="img-responsive"/>
 								</g:else>
 							</div>
 							<div class="card-footer">
-								<p>Profile for <strong>${profile.fullName}</strong></p>
+								<p>${entityName} ${forLabel} <strong>${fullName}</strong></p>
 								<g:if test="${profile.about}">
-									<p>About: ${profile.about}</p>
+									<p><g:message code="profile.about.label" args="${[profile.about]}"/></p>
 								</g:if>
 							</div>
 						</div>
@@ -145,31 +149,38 @@
 								<div class="btn-group mt-4">
 									<g:if test="${loggedInIsFollowing}">
 										<button id="followingButton" class="btn btn-default following" role="button">
-											Following
+                                            <g:message code="profile.button.following.label" default="Following"/>
 										</button>
 									</g:if>
 									<g:else>
 										<button id="followingButton" class="btn btn-info nofollow" role="button">
-											<span class="glyphicon glyphicon-plus"></span> Follow Me!
+											<span class="glyphicon glyphicon-plus"></span> <g:message code="profile.button.add.follow.label" default="Follow Me!"/>
 										</button>
 									</g:else>
-									<button id="optionsMenu" type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<button id="optionsMenu" type="button" class="btn btn-outline-dark dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<span class="glyphicon glyphicon-cog"></span>
 									</button>
 									<div class="dropdown-menu" aria-labelledby="optionsMenu" role="menu">
                                         <a class="dropdown-item" href="#">
-                                            Start Ripple with ${profile.user.username}
+                                            <g:message code="profile.user.menu.start.ripple.with.label"
+                                                       args="${[username]}"
+                                                       default="Start Ripple with ${username}"/>
                                         </a>
                                         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#sendMessageBox">
-                                            Message ${profile.user.username}
+                                            <g:message code="profile.user.menu.message.label"
+                                                       args="${[username]}"
+                                                       default="Message ${username}"/>
                                         </a>
                                         <g:if test="${currentLoggedInUser.following.contains(profile.user)}">
                                             <a class="dropdown-item" href="#" id="unfollowButton">
-                                                Unfollow ${profile.user.username}
+                                                <g:message code="profile.user.menu.unfollow.label"
+                                                           args="${[username]}"
+                                                           default="Unfollow ${username}"/>
                                             </a>
                                         </g:if>
                                         <a class="dropdown-item" href="#" id="blockButton">
-                                            Block User
+                                            <g:message code="profile.user.menu.block.user.label" default="Block User"/>
                                         </a>
 									</div>
 								</div>
@@ -181,14 +192,16 @@
 			<div class="col-md-6 col-sm-8 mb-4">
 				<div class="alert alert-success" id="message"></div>
 				<div class="alert alert-danger" id="error"></div>
-				<h3>Latest Ripples for ${profile.fullName}</h3>
+				<h3><g:message code="profile.latest.ripples.label" args="${[fullName]}"/></h3>
 				<g:render template="/ripple/topicEntry" collection="${profile.user.ripples}" var="ripple" />
 			</div>
 			<div class="col-md-3 col-sm-8">
 				<g:if test="${profile.user.following}">
 					<div class="card mb-4">
 						<div class="card-header bg-info">
-							<h5 class="card-title text-white">Follows</h5>
+							<h5 class="card-title text-white">
+                                <g:message code="profile.follows.label" default="Follows"/>
+                            </h5>
 						</div>
 							<div class="card-body">
 								<g:render template="profileEntry" collection="${profile.user.following}" var="user" />
@@ -198,7 +211,9 @@
 				<g:if test="${followedBy}">
 					<div class="card mb-4">
 						<div class="card-header bg-info">
-							<h5 class="card-title text-white">Followed By</h5>
+							<h5 class="card-title text-white">
+                                <g:message code="profile.followed.by.label" default="Followed By"/>
+                            </h5>
 						</div>
 							<div class="card-body">
 								<g:render template="profileEntry" collection="${followedBy}" var="user" />
@@ -207,7 +222,9 @@
 				</g:if>
 				<div class="card mb-4">
 					<div class="card-header bg-info">
-						<h5 class="card-title text-white">Users You May Know</h5>
+						<h5 class="card-title text-white">
+                            <g:message code="profile.users.you.may.know.label" default="Users You May Know"/>
+                        </h5>
 					</div>
 					<div class="card-body">
 						<p>No one!</p>
@@ -215,7 +232,11 @@
 				</div>
                 <div class="card mb-4">
                     <div class="card-header bg-info">
-                        <h5 class="card-title text-white">${profile.user.username}'s Tags</h5>
+                        <h5 class="card-title text-white">
+                            <g:message code="profile.user.tags.label"
+                                       args="${[username]}"
+                                       default="${username}'s Tags"/>
+                        </h5>
                     </div>
                     <div class="card-body">
                         <g:each in="${profile.user.tags}" var="tag">
@@ -226,32 +247,7 @@
 			</div>
 		</div>
 	    <sec:ifLoggedIn>
-            <div class="modal fade" id="sendMessageBox" tabindex="-1" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title">Send Message</h5>
-                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div style="margin-top: 20px;" id="sendMessageAlert" class="d-none alert alert-info"></div>
-                            <g:form useToken="false" name="sendMessageForm" controller="message" action="save" method="POST">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject"/>
-                                </div>
-                                <div class="form-group">
-                                    <g:textArea class="form-control" name="content"/>
-                                </div>
-                                <input type="hidden" name="recipientUsername" id="recipientUsername" value="${profile.user.username}"/>
-                                <button type="button" class="btn btn-success btn-block" id="doMessageSend">Send</button>
-                            </g:form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <g:render template="/message/sendMessageModal" model='[recipient: "${username}"]'/>
         </sec:ifLoggedIn>
 	</body>
 </html>

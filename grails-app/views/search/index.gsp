@@ -1,12 +1,12 @@
 <%@page expressionCodec="none" %> <!-- I don't like this... doesn't seem to work otherwise-->
 <html>
     <head>
-        <title>Search Ripples</title>
+        <title><g:message code="search.page.title.label" default="Search Ripples"/></title>
         <meta name="layout" content="main" />
     </head>
     <body>
         <div class="border-bottom mb-4">
-            <h1>Search</h1>
+            <h1><g:message code="search.page.headline.label" default="Search"/></h1>
         </div>
         <g:if test="${flash.message}">
             <div class="flash alert alert-success alert-dismissible">

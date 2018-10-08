@@ -5,10 +5,10 @@
                 <i class="glyphicon glyphicon-search h4 text-body"></i>
             </div>
             <div class="col">
-                <g:textField class="form-control form-control-lg form-control-borderless" id="searchBox" name="q" placeholder="Search Ripples" />
+                <g:textField class="form-control form-control-lg form-control-borderless" id="searchBox" name="q" placeholder="${message(code:'search.page.input.placeholder.label', default: 'Search Ripples')}" />
             </div>
             <div class="col-auto">
-                <g:submitButton class="btn btn-primary btn-lg" name="search" value="Search" />
+                <g:submitButton class="btn btn-primary btn-lg" name="search" value="${message(code:'search.page.button.label', default: 'Search')}" />
             </div>
         </div>
     </g:form>
