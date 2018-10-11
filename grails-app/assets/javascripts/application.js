@@ -8,8 +8,9 @@
 //= require jquery-3.3.1
 //= require popper
 //= require bootstrap
+//= require auth
 //= require ripples
-//= require_tree .
+// require_tree .
 //= require_self
 
 if (typeof jQuery !== 'undefined') {

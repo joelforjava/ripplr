@@ -14,114 +14,8 @@
 				font-size: 1em;
 			}
 		</style>
-		<g:javascript>
-			$(document).ready(function() {
-				$("#message, #error").hide();
-				$("#followingButton.nofollow").click(function() {
-					$("#followingButton").html('<div class="loader">Loading...</div>')
-					jQuery.ajax({
-						type:'POST', 
-						data: {'usernameToFollow': '${username}'},
-						url:'/user/follow',
-						success: function(data, status) { 
-							displaySuccess(data);
-							$("#followingButton").removeClass("btn-info nofollow")
-												 .addClass("btn-default following disabled")
-												 .text("Following")
-												 .blur(); 
-						},
-						error: function(XMLHttpRequest,textStatus,errorThrown) {
-							 displayError(XMLHttpRequest.responseText); 
-						}
-					});
-					return false;
-				});
-				$("#blockButton").click(function() {
-					jQuery.ajax({
-						type:'POST',
-						data:{'usernameToBlock': '${username}'},
-						url:'/user/block',
-						success: function(data,textStatus) {
-							displaySuccess(data);
-
-							$("#optionsMenu").blur();
-						},
-						error: function(XMLHttpRequest,textStatus,errorThrown) {
-							displayError(XMLHttpRequest.responseText);
-						}
-					});
-					return false;
-				});
-				$("#unfollowButton").click(function() {
-					$("#followingButton").html('<div class="loader">Loading...</div>')
-					$(".dropdown-menu").blur();
-					jQuery.ajax({
-						type:'POST',
-						data:{'usernameToUnfollow': '${username}'},
-						url:'/user/unfollow',
-						success: function(data,textStatus) {
-							displaySuccess(data);
-							$("#unfollowButton, #optionsMenu").blur();
-							$("#followingButton").addClass("btn-info nofollow")
-												 .removeClass("btn-default following disabled")
-												 .html('<span class="glyphicon glyphicon-plus"></span> Follow Me!')
-												 .blur();
-							$("#unfollowButton").hide(); 
-						},
-						error: function(XMLHttpRequest,textStatus,errorThrown) {
-							displayError(XMLHttpRequest.responseText);
-						}
-					});
-					return false;
-				});
-
-				function displaySuccess(message) {
-					$("#message").html(message)
-								 .show("fast")
-								 .fadeOut(10000);
-				}
-
-				function displayError(message) {
-					$("#error").html(message)
-							   .show("fast")
-							   .fadeOut(10000);
-				}
-
-				var sendMessageButton = $('#doMessageSend');
-				var sendMessage = function() {
-					sendMessageButton.text('Sending...').addClass('disabled');
-					var form = $('#sendMessageForm');
-					$.ajax({
-						url: form.attr('action'),
-						method: 'POST',
-						data: form.serialize(),
-						dataType: 'JSON',
-						success: function(json, textStatus, jqXHR) {
-						    console.log(json);
-							if (json) {    // There is no 'success' indicator currently
-								form[0].reset();
-								sendMessageButton.text('Send').removeClass('disabled');
-								location.reload(true);
-							} else {
-								$("#sendMessageAlert").text(jqXHR.responseText).removeClass('hidden alert-info').addClass('alert-danger');
-							}
-						},
-						error: function(jqXHR, textStatus, errorThrown) {
-							if (jqXHR.status === 401 && jqXHR.getResponseHeader('Location')) {
-								$("#sendMessageAlert").text('Error!').removeClass('hidden alert-info').addClass('alert-danger');
-							} else {
-								sendMessageButton.text('Error!!').removeClass('disabled btn-success').addClass('btn-error');
-							}
-						},
-						complete: function(jqXHR, textStatus) {
-							sendMessageButton.text('Send').removeClass('disabled');
-						}
-					})
-
-				};
-				sendMessageButton.click(sendMessage);
-			});
-		</g:javascript>
+        <asset:javascript src="profile.js"/>
+        <asset:javascript src="messages.js"/>
 	</head>
 	<body>
 		<div class="row">
@@ -190,8 +84,18 @@
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-8 mb-4">
-				<div class="alert alert-success" id="message"></div>
-				<div class="alert alert-danger" id="error"></div>
+                <g:if test="${flash.message}">
+                    <div class="flash alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="${message(code: 'close.label', default: 'Close')}"><span ara-hidden="true">&times;</span></button>
+                        ${flash.message}
+                    </div>
+                </g:if>
+               <g:if test="${flash.error}">
+                    <div class="flash alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="${message(code: 'close.label', default: 'Close')}"><span ara-hidden="true">&times;</span></button>
+                        ${flash.error}
+                    </div>
+                </g:if>
 				<h3><g:message code="profile.latest.ripples.label" args="${[fullName]}"/></h3>
 				<g:render template="/ripple/topicEntry" collection="${profile.user.ripples}" var="ripple" />
 			</div>
