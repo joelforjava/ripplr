@@ -19,7 +19,7 @@
 			<div class="col-md-2">
 			</div>
 			<div class="col-md-6">
-				<g:uploadForm useToken="true" action="updateProfile">
+				<g:uploadForm useToken="true" action="update">
 					<g:render template="userForm" model="[user: user]" />
 					<fieldset class="buttons">
 						<g:submitButton class="btn btn-primary" name="update" value="${message(code: 'update.form.update.button.label', default: 'Update!')}" />

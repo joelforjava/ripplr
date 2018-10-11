@@ -77,9 +77,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         when: "the save action is invoked"
         controller.save urc
 
-        then: "we are redirected to the registration view"
+        then: "we are redirected to the register view"
 
-        view == "/user/registration"
+        view == "/user/register"
 
     }
 
@@ -89,8 +89,8 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             1 * isLoggedIn() >> true
         }
 
-        when: 'We attempt to view the registration page'
-        controller.registration()
+        when: 'We attempt to view the register page'
+        controller.register()
 
         then: 'We are redirected to home'
         response.redirectedUrl == "/"
@@ -118,12 +118,12 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
     	and: "we have the form token set"
             def tokenHolder = SynchronizerTokensHolder.store(session)
-            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/update'
             params[SynchronizerTokensHolder.TOKEN_KEY] =
                     tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
-        when: "the new update action is invoked"
-            controller.updateProfile urc
+        when: "the new edit action is invoked"
+            controller.update urc
 
         then: "the user is updated and the browser is redirected"
             !urc.hasErrors()
@@ -136,7 +136,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             def urc = validUserUpdateCommandObject()
 
         when: 'the new save action is invoked'
-            controller.updateProfile urc
+            controller.update urc
 
         then: 'the user is not registered and an error message is received'
             response.text == 'Invalid or duplicate form submission'
@@ -148,12 +148,12 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: 'we have the form token set'
             def tokenHolder = SynchronizerTokensHolder.store(session)
-            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/update'
             params[SynchronizerTokensHolder.TOKEN_KEY] =
                     tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
-        when: 'the new update action is invoked'
-            controller.updateProfile uuc
+        when: 'the new edit action is invoked'
+            controller.update uuc
 
         then: 'we receive a NOT FOUND error'
             status == 404
@@ -169,15 +169,15 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: 'we have the form token set'
             def tokenHolder = SynchronizerTokensHolder.store(session)
-            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/update'
             params[SynchronizerTokensHolder.TOKEN_KEY] =
                     tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
-        when: 'the new update action is invoked'
-            controller.updateProfile uuc
+        when: 'the new edit action is invoked'
+            controller.update uuc
 
-        then: 'we are sent back to the update page'
-            view == 'update'
+        then: 'we are sent back to the edit page'
+            view == 'edit'
 
         and: 'we get the command object sent back to us'
             model.user == uuc
@@ -189,7 +189,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: 'we have the form token set'
             def tokenHolder = SynchronizerTokensHolder.store(session)
-            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/updateProfile'
+            params[SynchronizerTokensHolder.TOKEN_URI] = '/user/update'
             params[SynchronizerTokensHolder.TOKEN_KEY] =
                     tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
@@ -198,8 +198,8 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                 1 * update(_ as UserUpdateCommand) >> null
             }
 
-        when: 'the new update action is invoked'
-            controller.updateProfile uuc
+        when: 'the new edit action is invoked'
+            controller.update uuc
 
         then: "we receive a NOT FOUND error"
             status == 404
@@ -219,8 +219,8 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                 1 * getCurrentUser() >> user
             }
 
-        when: "we call update"
-            def model = controller.update()
+        when: "we call edit"
+            def model = controller.edit()
 
         then: "we receive a model object with the user's profile details"
             model.user.profile.fullName == user.profile.fullName

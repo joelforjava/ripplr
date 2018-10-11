@@ -40,7 +40,7 @@
 				<sec:ifNotLoggedIn>
 					<h1>What is Ripplr?</h1>
 					<p>Ripplr is a site to create ripples of discussion among friends, colleagues, and other interesting people.</p>
-					<p><a class="btn btn-primary btn-lg" href="${createLink(controller: 'user', action: 'registration')}" role="button">Join Ripplr</a></p>
+					<p><a class="btn btn-primary btn-lg" href="${createLink(controller: 'user', action: 'register')}" role="button">Join Ripplr</a></p>
 				</sec:ifNotLoggedIn>
 				<sec:ifLoggedIn>
 					<p>Welcome back, <sec:username />!</p>

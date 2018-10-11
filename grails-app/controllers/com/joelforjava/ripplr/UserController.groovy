@@ -52,7 +52,7 @@ class UserController {
         return [profile: user.profile, followedBy: followers, currentLoggedInUser: currentUser, loggedInIsFollowing: isLoggedInFollowing]
     }
 
-    def registration() {
+    def register() {
         if (springSecurityService.loggedIn) {
             flash.message = 'You are already a registered user!'
             redirect uri: '/'
@@ -60,19 +60,19 @@ class UserController {
     }
 
     /**
-     * Performs user registration
+     * Saves a new user
      * @param urc a valid UserRegisterCommand object
      */
     def save(UserRegisterCommand urc) {
         withForm {
         	if (urc.hasErrors()) {
-        		render view: 'registration', model: [ user : urc ]
+        		render view: 'register', model: [ user : urc ]
                 return
         	}
 
             def user = userService.save(urc)
             if (user.hasErrors()) {
-                render view: 'registration', model: [ user : user ]
+                render view: 'register', model: [ user : user ]
                 return
             }
 
@@ -83,7 +83,7 @@ class UserController {
         }
     }
 
-    def update() {
+    def edit() {
     	def user = springSecurityService.currentUser
     	if (!user) {
     		response.sendError 404
@@ -93,8 +93,8 @@ class UserController {
     }
 
     // TODO - consider if this really should be separated out into user/profile updates
-    // Also TODO - actually make update do some updating. And make sure one user can't update another!
-    def updateProfile(UserUpdateCommand uuc) {
+    // Also TODO - make sure one user can't update another!
+    def update(UserUpdateCommand uuc) {
     	withForm {
 
             if (!uuc.username) {
@@ -103,7 +103,7 @@ class UserController {
             }
 
         	if (uuc.hasErrors()) {
-        		respond uuc.errors, [view: "update", model: [ user : uuc ] ]
+        		respond uuc.errors, [view: "edit", model: [ user : uuc ] ]
                 return
         	}
 
@@ -114,7 +114,7 @@ class UserController {
             }
 
             if (user.hasErrors()) {
-                respond user.errors, [view: 'update', model: [ user : user ]]
+                respond user.errors, [view: 'edit', model: [ user : user ]]
                 return
             }
 
@@ -126,7 +126,7 @@ class UserController {
             }
 
             flash.message = "Changes Saved."
-            redirect uri: "/"   // Maybe go back to 'update'?
+            redirect uri: "/"   // Maybe go back to 'edit'?
     	}.invalidToken {
             invalidToken()
     	}

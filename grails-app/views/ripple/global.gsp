@@ -30,7 +30,7 @@
 								  default="Ripplr is a site to create ripples of discussion among friends, colleagues, and other interesting people."/></p>
 					<p>
                         <a class="btn btn-primary btn-lg"
-                           href="${createLink(controller: 'user', action: 'registration')}" role="button">
+                           href="${createLink(controller: 'user', action: 'register')}" role="button">
                             <g:message code="join.ripplr.button.label" default="Join Ripplr"/>
                         </a>
                     </p>
