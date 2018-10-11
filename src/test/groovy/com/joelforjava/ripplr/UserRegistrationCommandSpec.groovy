@@ -29,7 +29,7 @@ class UserRegistrationCommandSpec extends Specification implements CommandObject
 
         where:
         username   | password   | passwordVerify    | fullName		| email					| anticipatedValid  | fieldInError       | errorCode
-        "kirk_ham" | "password" | "IDontMatch"      | "Kirk Hammett"| "kirk@metallica.com"	| false             | "passwordVerify"   | "validator.invalid"
+        "kirk_ham" | "password" | "IDontMatch"      | "Kirk Hammett"| "kirk@metallica.com"	| false             | "passwordVerify"   | "noMatch"
         "james_het"| "password" | "password"        | "Jim Hetfield"| "james@metallica.com" | true				| null               | null
         "dave_must"| "guitars"  | "guitars"         | "Dave"        | "dave@megadeth.com"   | true				| null               | null
         "dr"       | "password" | "password"        | "Doc"			| "doc@derp.com"		| false             | "username"         | "size.toosmall"

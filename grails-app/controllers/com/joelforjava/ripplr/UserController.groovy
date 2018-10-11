@@ -1,11 +1,15 @@
 package com.joelforjava.ripplr
 
 import grails.plugin.springsecurity.SpringSecurityService
+import groovy.transform.CompileDynamic
 import groovy.util.logging.Slf4j
+import org.springframework.context.MessageSource
+import org.springframework.http.HttpStatus
 
 @Slf4j
 class UserController {
 
+    MessageSource messageSource
     ProfileService profileService
 	SpringSecurityService springSecurityService
     UserService userService
@@ -89,11 +93,12 @@ class UserController {
     }
 
     // TODO - consider if this really should be separated out into user/profile updates
+    // Also TODO - actually make update do some updating. And make sure one user can't update another!
     def updateProfile(UserUpdateCommand uuc) {
     	withForm {
 
             if (!uuc.username) {
-                response.sendError 404
+                notFound()
                 return
             }
 
@@ -104,14 +109,19 @@ class UserController {
 
             def user = userService.update(uuc)
             if (user == null) {
-                response.sendError 404
+                notFound()
+                return
+            }
+
+            if (user.hasErrors()) {
+                respond user.errors, [view: 'update', model: [ user : user ]]
                 return
             }
 
             // TODO - this really shouldn't send 404. What's the best response?
             Profile profile = profileService.updateProfile(user.id, uuc.profile, true)
             if (profile == null) {
-                response.sendError 404
+                notFound()
                 return
             }
 
@@ -201,6 +211,21 @@ class UserController {
 
     protected void invalidToken() {
         render 'Invalid or duplicate form submission'
+    }
+
+    @CompileDynamic
+    protected void notFound() {
+        request.withFormat {
+            form multipartForm {
+                String profileLabel = messageSource.getMessage('profile.label',
+                                                                [] as Object[], 'Profile', request.locale)
+                flash.message = messageSource.getMessage('default.not.found.message',
+                                                          [profileLabel, params.id] as Object[],
+                                                          'Profile not found', request.locale)
+                redirect(uri: '/', method: 'GET')
+            }
+            '*' { render status: HttpStatus.NOT_FOUND }
+        }
     }
 
 }

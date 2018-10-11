@@ -30,12 +30,16 @@ class UserRegisterCommand implements Validateable {
             }
         }
         password size: 6..150, blank: false,
-                validator: { passwd, urc ->
-                    return passwd != urc.username
+                validator: { passwd, urc, errors ->
+                    if (passwd == urc.username) {
+                        errors.rejectValue('password', 'notUsername')
+                    }
                 }
         passwordVerify nullable: false,
-                validator: { passwd2, urc ->
-                    return passwd2 == urc.password
+                validator: { passwd2, urc, errors ->
+                    if (passwd2 != urc.password) {
+                        errors.rejectValue('passwordVerify', 'noMatch')
+                    }
                 }
     }
 

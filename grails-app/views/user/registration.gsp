@@ -43,8 +43,8 @@
 					<div class="form-group">
 						<label for="profile.email"><g:message code="register.form.email.label" default="Email"/></label>
 						<g:textField class="form-control" name="profile.email" value="${user?.profile?.email}" />
-						<g:hasErrors bean="${user?.profile}" field="email">
-							<g:eachError bean="${user?.profile}" field="email">
+						<g:hasErrors bean="${user}" field="profile.email">
+							<g:eachError bean="${user}" field="profile.email">
 								<p style="color: red;"><g:message error="${it}" /></p>
 							</g:eachError>
 						</g:hasErrors>
