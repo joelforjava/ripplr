@@ -63,14 +63,14 @@ class UserController {
      * Performs user registration
      * @param urc a valid UserRegisterCommand object
      */
-    def register(UserRegisterCommand urc) {
+    def save(UserRegisterCommand urc) {
         withForm {
         	if (urc.hasErrors()) {
         		render view: 'registration', model: [ user : urc ]
                 return
         	}
 
-            def user = userService.create(urc)
+            def user = userService.save(urc)
             if (user.hasErrors()) {
                 render view: 'registration', model: [ user : user ]
                 return

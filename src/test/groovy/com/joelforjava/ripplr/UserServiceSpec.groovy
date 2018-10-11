@@ -40,7 +40,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         }
 
         when: 'We call the service to create the user and profile'
-        def newUser = service.create(urc)
+        def newUser = service.save(urc)
 
         then: 'We get back a new user'
         !newUser.hasErrors()
@@ -57,7 +57,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         }
 
         when: 'We call the service to create the user and profile'
-        def newUser = service.create(urc)
+        def newUser = service.save(urc)
 
         then: 'We get back a user object with errors'
         newUser.hasErrors()

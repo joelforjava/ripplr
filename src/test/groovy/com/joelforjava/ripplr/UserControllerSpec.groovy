@@ -24,16 +24,16 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
-            1 * create(_ as UserRegisterCommand) >> validUserAndProfile()
+            1 * save(_ as UserRegisterCommand) >> validUserAndProfile()
         }
 
     	and: "we have the form token set"
         def tokenHolder = SynchronizerTokensHolder.store(session)
-        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/register'
+        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/save'
         params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
-        when: "the new register action is invoked"
-        controller.register urc
+        when: "the new save action is invoked"
+        controller.save urc
 
         then: "the user is registered and the browser is redirected"
         !urc.hasErrors()
@@ -50,11 +50,11 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "a mock user service"
         controller.userService = Mock(UserService) {
-            0 * create(_ as UserRegisterCommand)
+            0 * save(_ as UserRegisterCommand)
         }
 
-        when: "the new register action is invoked"
-        controller.register urc
+        when: "the new save action is invoked"
+        controller.save urc
 
         then: "the user is not registered and an error message is received"
         !urc.hasErrors()
@@ -71,11 +71,11 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
         and: "we have the form token set"
         def tokenHolder = SynchronizerTokensHolder.store(session)
-        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/register'
+        params[SynchronizerTokensHolder.TOKEN_URI] = '/user/save'
         params[SynchronizerTokensHolder.TOKEN_KEY] = tokenHolder.generateToken(params[SynchronizerTokensHolder.TOKEN_URI])
 
-        when: "the register action is invoked"
-        controller.register urc
+        when: "the save action is invoked"
+        controller.save urc
 
         then: "we are redirected to the registration view"
 
@@ -135,7 +135,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         given: 'A properly configured command object'
             def urc = validUserUpdateCommandObject()
 
-        when: 'the new register action is invoked'
+        when: 'the new save action is invoked'
             controller.updateProfile urc
 
         then: 'the user is not registered and an error message is received'

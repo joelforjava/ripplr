@@ -49,7 +49,7 @@ class UserService {
         User.list(max: numToReturn, sort: 'dateCreated', order: 'desc')
     }
 
-    User create(UserRegisterCommand command, boolean flush = false) {
+    User save(UserRegisterCommand command, boolean flush = false) {
         def user = command as User
         if (!user?.save(flush: flush)) {
             log.error("Could not save user: ${user?.errors?.toString()}")

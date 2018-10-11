@@ -18,7 +18,7 @@
 		<div class="col-md-2">
 		</div>
 		<div class="col-md-6">
-			<g:uploadForm useToken="true" action="register">
+			<g:uploadForm useToken="true" action="save">
 				<fieldset class="form">
 					<div class="form-group">
 						<label for="username"><g:message code="register.form.username.label" default="User Name"/></label>
