@@ -36,6 +36,7 @@
 								<g:if test="${profile.about}">
 									<p><g:message code="profile.about.label" args="${[profile.about]}"/></p>
 								</g:if>
+                                <input type="hidden" name="profileUsername" id="profileUsername" value="${username}">
 							</div>
 						</div>
 						<sec:ifLoggedIn>
@@ -84,18 +85,8 @@
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-8 mb-4">
-                <g:if test="${flash.message}">
-                    <div class="flash alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="${message(code: 'close.label', default: 'Close')}"><span ara-hidden="true">&times;</span></button>
-                        ${flash.message}
-                    </div>
-                </g:if>
-               <g:if test="${flash.error}">
-                    <div class="flash alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="${message(code: 'close.label', default: 'Close')}"><span ara-hidden="true">&times;</span></button>
-                        ${flash.error}
-                    </div>
-                </g:if>
+				<div class="alert alert-success" id="message"></div>
+				<div class="alert alert-danger" id="error"></div>
 				<h3><g:message code="profile.latest.ripples.label" args="${[fullName]}"/></h3>
 				<g:render template="/ripple/topicEntry" collection="${profile.user.ripples}" var="ripple" />
 			</div>
