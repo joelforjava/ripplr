@@ -9,10 +9,12 @@
             $.ajax({
                 type:'POST',
                 data:jQuery(this).parents('form:first').serialize(),
-                url:'/ripple/addAjax',
+                url:'/ripple/save',
                 success: function(data,textStatus){
-                    $('#allTopics').html(data);
-                    clearTopic(data);
+                    if (textStatus === 'success') {
+                        $('#allTopics').html(data);
+                        clearTopic(data);
+                    }
                 },
                 error: function(XMLHttpRequest,textStatus,errorThrown){
                 },

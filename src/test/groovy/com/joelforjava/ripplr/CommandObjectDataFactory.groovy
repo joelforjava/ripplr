@@ -33,4 +33,13 @@ trait CommandObjectDataFactory {
     UserUpdateCommand emptyUserUpdateCommandObject() {
         new UserUpdateCommand()
     }
+
+    RippleSaveCommand emptyRippleSaveCommand() {
+        new RippleSaveCommand()
+    }
+
+    RippleSaveCommand validRippleSaveCommand() {
+        new RippleSaveCommand(content: 'Valid Content', fromPage: 'timeline')
+
+    }
 }

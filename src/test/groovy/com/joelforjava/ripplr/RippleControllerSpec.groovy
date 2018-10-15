@@ -5,7 +5,8 @@ import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
-class RippleControllerSpec extends Specification implements ControllerUnitTest<RippleController>, DataTest, DomainDataFactory {
+class RippleControllerSpec extends Specification implements ControllerUnitTest<RippleController>,
+                                                            DataTest, DomainDataFactory, CommandObjectDataFactory {
 
     def setupSpec() {
 		mockDomains(User, Ripple)
@@ -261,6 +262,123 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
         resultHtml.@class ==~ /.*topicEntry.*/
         resultHtml.div[0].div[0].div[1].h4.text() ==~ /.*jeeves.*/
         //resultHtml.div[0].div[0].div[1].text() ==~ /.*Mock ripple.*/
+
+    }
+
+    /* --- save Specs --- */
+
+	void 'Saving a valid ripple via a form'() {
+        given: 'A valid save command object'
+        def cmd = validRippleSaveCommand()
+
+        and: 'A mocked ripple object'
+        def ripple = validRipple()
+
+        and: 'A properly mocked security service'
+        controller.springSecurityService = Mock(SpringSecurityService) {
+            1 * getCurrentUser() >> ripple.user
+        }
+
+        and: 'A properly mocked rippleService'
+        controller.rippleService = Mock(RippleService) {
+            1 * createRipple(*_) >> ripple
+            1 * retrieveLatestRipplesForUser(*_) >> [ripple]
+        }
+
+        and:
+        response.reset()
+        request.contentType = FORM_CONTENT_TYPE
+        request.method = 'POST'
+
+        when: 'The save action is invoked'
+        controller.save(cmd)
+
+        then: "the list of ripple entries are returned"
+        status == 200
+        flash.message ==~ /.*Added new ripple.*/
+
+        and: 'We get the HTML as expected'
+        // issues with 'rip' tags being unbound will not allow use of response.xml
+        def xmlSlurper = new XmlSlurper(false, false)
+        def resultHtml = xmlSlurper.parseText(response.text)
+        resultHtml.@class ==~ /.*topicEntry.*/
+        resultHtml.div[0].div[0].div[1].h4.text() ==~ /.*${ripple.user.username}.*/
+    }
+
+    void 'Saving a null ripple via a form is not permitted'() {
+        given: 'An empty command object'
+        def cmd = emptyRippleSaveCommand()
+
+        and: 'We have validated it'
+        cmd.validate()
+
+        when: 'We call save'
+        controller.save(cmd)
+
+        then: 'We get the expected results'
+        status == 400
+        view == 'create'
+    }
+
+    void 'Saving a ripple when the service causes an exception results in an error message'() {
+        given: 'A valid save command object'
+        def cmd = validRippleSaveCommand()
+
+        and: 'A mocked ripple object'
+        def ripple = validRipple()
+
+        and: 'A properly mocked security service'
+        controller.springSecurityService = Mock(SpringSecurityService) {
+            1 * getCurrentUser() >> ripple.user
+        }
+
+        and: 'A properly mocked rippleService'
+        controller.rippleService = Mock(RippleService) {
+            1 * createRipple(*_) >> { throw new RippleException(message:  "Invalid content") }
+        }
+
+        and:
+        response.reset()
+        request.contentType = FORM_CONTENT_TYPE
+        request.method = 'POST'
+
+        when: 'The save action is invoked'
+        controller.save(cmd)
+
+        then: "we get a message from the exception"
+        status == 422
+        flash.message ==~ /.*Invalid.*/
+    }
+
+    void 'Saving a valid ripple via JSON'() {
+        given: 'A valid save command object'
+        def cmd = validRippleSaveCommand()
+
+        and: 'A mocked ripple object'
+        def ripple = validRipple()
+
+        and: 'A properly mocked security service'
+        controller.springSecurityService = Mock(SpringSecurityService) {
+            1 * getCurrentUser() >> ripple.user
+        }
+
+        and: 'A properly mocked rippleService'
+        controller.rippleService = Mock(RippleService) {
+            1 * createRipple(*_) >> ripple
+            1 * list(*_) >> [ripple]
+        }
+
+        and:
+        response.reset()
+        request.contentType = JSON_CONTENT_TYPE
+        request.method = 'POST'
+        request.json = '{"content":"' + cmd.content + '", "fromPage": "global" }'
+
+        when: 'The save action is invoked'
+        controller.save()
+
+        then: 'We get the expected return status'
+        status == 201
 
     }
 

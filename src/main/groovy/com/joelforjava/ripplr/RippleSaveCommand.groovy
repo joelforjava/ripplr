@@ -6,9 +6,11 @@ import grails.validation.Validateable
  * Created by joel on 3/21/17.
  */
 class RippleSaveCommand implements Validateable {
-    String message
+    String content
+    String fromPage // TODO - convert to enum
 
     static constraints = {
-        message blank: false, nullable: false
+        content blank: false, nullable: false
+        fromPage nullable: false, inList: ['global', 'timeline']
     }
 }

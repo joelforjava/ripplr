@@ -20,7 +20,7 @@
 		<div class="row">
 			<sec:ifLoggedIn>
 				<div class="col-sm-12 col-md-4" id="newPost">
-					<g:render template="addTopicForm" />
+					<g:render template="addTopicForm" model="[fromPage: 'global']"/>
 				</div>
 			</sec:ifLoggedIn>
 			<sec:ifNotLoggedIn>

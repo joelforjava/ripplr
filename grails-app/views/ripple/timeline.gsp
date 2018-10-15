@@ -20,7 +20,7 @@
 		</g:if>
 		<div class="row">
 			<div class="col-md-8 offset-md-2" id="newPost">
-				<g:render template="addTopicForm" />
+				<g:render template="addTopicForm" model="[fromPage: 'timeline']" />
 			</div>
 		</div>
 		<div class="row">

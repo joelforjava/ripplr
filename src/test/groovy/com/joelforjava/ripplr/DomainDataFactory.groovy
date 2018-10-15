@@ -33,4 +33,8 @@ trait DomainDataFactory {
     Message validMessage() {
         validMessageWithSenderAndRecipient(validUserWithUsername('sender@sender.com'), validUserWithUsername('recipient@recipient.com'))
     }
+
+    Ripple validRipple() {
+        new Ripple(content: 'Valid content', user: validUser())
+    }
 }

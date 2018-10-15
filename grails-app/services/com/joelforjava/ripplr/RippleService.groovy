@@ -1,6 +1,7 @@
 package com.joelforjava.ripplr
 
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 
 
 class RippleException extends RuntimeException {
@@ -30,6 +31,7 @@ class RippleService {
                 }
             }
 			user.addToRipples ripple
+			user.save(flush: true)
 
 			if (!ripple.validate() || !user.save(flush: true)) {
 				throw new RippleException(message: "Invalid content for ripple", ripple: ripple)
@@ -60,6 +62,10 @@ class RippleService {
 	// user ripples are handled in user views, so no need for a get for them
 	// will need something for a global dashboard that shows everyones ripples
 	// likely a paginated service method
+
+    def list(GrailsParameterMap params) {
+        Ripple.list(params)
+    }
 
 	def retrieveLatestRipplesForUser(String username, int maxLatest) {
 		def user = User.findByUsername username
