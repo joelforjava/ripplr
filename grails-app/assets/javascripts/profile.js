@@ -7,19 +7,15 @@
         var $username = $("#profileUsername").val();
 
         $("#message, #error").hide();
-        $("#followingButton.nofollow").click(function() {
-           followUser($username).done(function(data) {
-               displaySuccess(data);
-               disableFollowButton();
-           }).catch(function (err) {
-               displayError(err);
-           });
-        });
+
+        if ($followingButton.hasClass("nofollow")) {
+            configureFollowButton();
+        }
 
         $blockButton.click(function() {
             blockUser($username).done(function(data) {
                 displaySuccess(data);
-                $("#optionsMenu").blur();
+                hideDisplayedMenu();
             }).catch(function (err) {
                 displayError(err);
             });
@@ -27,20 +23,33 @@
 
         $unfollowButton.click(function() {
             $followingButton.html('<div class="loader">Loading...</div>');
-            $(".dropdown-menu").blur();
             unfollowUser($username).done(function(data) {
                 displaySuccess(data);
                 reenableFollowButton();
+                configureFollowButton();
                 hideUnfollowButton();
+                hideDisplayedMenu();
             }).catch(function (err) {
                 displayError(err);
             });
         });
 
+        function configureFollowButton() {
+            $followingButton.click(function() {
+                followUser($username).done(function(data) {
+                    displaySuccess(data);
+                    disableFollowButton();
+                }).catch(function (err) {
+                    displayError(err);
+                });
+            });
+        }
+
         function disableFollowButton() {
             $followingButton.removeClass("btn-info nofollow")
                 .addClass("btn-default following disabled")
                 .text("Following")
+                .off('click')
                 .blur();
         }
 
@@ -52,8 +61,12 @@
         }
 
         function hideUnfollowButton() {
-            $("#unfollowButton, #optionsMenu").blur();
+            $unfollowButton.blur();
             $unfollowButton.hide();
+        }
+
+        function hideDisplayedMenu() {
+            $(".dropdown-menu.show").dropdown('toggle');
         }
 
         function followUser(username) {
