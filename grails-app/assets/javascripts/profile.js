@@ -5,26 +5,17 @@
         var $unfollowButton = $("#unfollowButton");
         var $blockButton = $("#blockButton");
         var $username = $("#profileUsername").val();
+
         $("#message, #error").hide();
         $("#followingButton.nofollow").click(function() {
-            $followingButton.html('<div class="loader">Loading...</div>');
-            $.ajax({
-                type:'POST',
-                data: {'usernameToFollow': $username},
-                url:'/user/follow',
-                success: function(data, status) {
-                    displaySuccess(data);
-                    $followingButton.removeClass("btn-info nofollow")
-                        .addClass("btn-default following disabled")
-                        .text("Following")
-                        .blur();
-                },
-                error: function(XMLHttpRequest,textStatus,errorThrown) {
-                    displayError(XMLHttpRequest.responseText);
-                }
-            });
-            return false;
+           followUser($username).done(function(data) {
+               displaySuccess(data);
+               disableFollowButton();
+           }).catch(function (err) {
+               displayError(err);
+           });
         });
+
         $blockButton.click(function() {
             blockUser($username).done(function(data) {
                 displaySuccess(data);
@@ -33,28 +24,55 @@
                 displayError(err);
             });
         });
+
         $unfollowButton.click(function() {
             $followingButton.html('<div class="loader">Loading...</div>');
             $(".dropdown-menu").blur();
-            $.ajax({
-                type:'POST',
-                data:{'usernameToUnfollow': $username},
-                url:'/user/unfollow',
-                success: function(data,textStatus) {
-                    displaySuccess(data);
-                    $("#unfollowButton, #optionsMenu").blur();
-                    $followingButton.addClass("btn-info nofollow")
-                        .removeClass("btn-default following disabled")
-                        .html('<span class="glyphicon glyphicon-plus"></span> Follow Me!')
-                        .blur();
-                    $unfollowButton.hide();
-                },
-                error: function(XMLHttpRequest,textStatus,errorThrown) {
-                    displayError(XMLHttpRequest.responseText);
-                }
+            unfollowUser($username).done(function(data) {
+                displaySuccess(data);
+                reenableFollowButton();
+                hideUnfollowButton();
+            }).catch(function (err) {
+                displayError(err);
             });
-            return false;
         });
+
+        function disableFollowButton() {
+            $followingButton.removeClass("btn-info nofollow")
+                .addClass("btn-default following disabled")
+                .text("Following")
+                .blur();
+        }
+
+        function reenableFollowButton() {
+            $followingButton.addClass("btn-info nofollow")
+                .removeClass("btn-default following disabled")
+                .html('<span class="glyphicon glyphicon-plus"></span> Follow Me!')
+                .blur();
+        }
+
+        function hideUnfollowButton() {
+            $("#unfollowButton, #optionsMenu").blur();
+            $unfollowButton.hide();
+        }
+
+        function followUser(username) {
+            var data = { usernameToFollow : username };
+            return $.ajax({
+                type: 'POST',
+                data: data,
+                url: '/user/follow'
+            });
+        }
+
+        function unfollowUser(username) {
+            var data = { usernameToUnfollow : username };
+            return $.ajax({
+                type: 'POST',
+                data: data,
+                url: '/user/unfollow'
+            });
+        }
 
         function blockUser(username) {
             var data = { usernameToBlock : username };

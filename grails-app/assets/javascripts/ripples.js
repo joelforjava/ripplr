@@ -8,7 +8,7 @@
             $(this).attr('disabled', 'disabled');
             $.ajax({
                 type:'POST',
-                data:jQuery(this).parents('form:first').serialize(),
+                data:$(this).parents('form:first').serialize(),
                 url:'/ripple/save',
                 success: function(data,textStatus){
                     if (textStatus === 'success') {

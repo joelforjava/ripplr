@@ -5,20 +5,20 @@
 // You're free to add application-wide JavaScript to this file, but it's generally better
 // to create separate JavaScript files as needed.
 //
-//= require jquery-3.3.1
-//= require popper
-//= require bootstrap
+//= require vendor/jquery-3.3.1
+//= require vendor/popper
+//= require vendor/bootstrap
 //= require auth
 //= require ripples
 // require_tree .
 //= require_self
 
-if (typeof jQuery !== 'undefined') {
+if (typeof window.jQuery !== 'undefined') {
     (function($) {
         $('#spinner').ajaxStart(function() {
             $(this).fadeIn();
         }).ajaxStop(function() {
             $(this).fadeOut();
         });
-    })(jQuery);
+    })(window.jQuery);
 }

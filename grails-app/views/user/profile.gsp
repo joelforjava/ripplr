@@ -43,7 +43,7 @@
 							<g:if test="${currentLoggedInUser != profile.user}">
 								<div class="btn-group mt-4">
 									<g:if test="${loggedInIsFollowing}">
-										<button id="followingButton" class="btn btn-default following" role="button">
+										<button id="followingButton" class="btn btn-default following disabled" role="button">
                                             <g:message code="profile.button.following.label" default="Following"/>
 										</button>
 									</g:if>

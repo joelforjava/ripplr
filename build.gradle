@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         mavenLocal()
+        jcenter()
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
@@ -10,17 +11,21 @@ buildscript {
     }
 }
 
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'war'
+    id 'codenarc'
+    id 'jacoco'
+    id "com.bertramlabs.asset-pipeline" version "3.0.2"
+    id "com.moowork.node" version "1.1.1"
+}
+
 version "0.1"
 group "ripplr.grails3"
 
-apply plugin:"eclipse"
-apply plugin:"idea"
-apply plugin:"war"
 apply plugin:"org.grails.grails-web"
 apply plugin:"org.grails.grails-gsp"
-apply plugin:"asset-pipeline"
-apply plugin: "codenarc"
-apply plugin: "jacoco"
 
 def elasticsearchVersion = '5.4.1'
 
@@ -32,6 +37,7 @@ ext {
 }
 
 repositories {
+    jcenter()
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
     maven { url "https://repo.grails.org/grails/plugins3" }
@@ -73,6 +79,8 @@ dependencies {
     runtime "org.glassfish.web:el-impl:2.1.2-b03"
     runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.8"
     runtime "com.h2database:h2"
+    runtime group: 'mysql', name: 'mysql-connector-java', version: '8.0.12'
+
     runtime "org.apache.tomcat:tomcat-jdbc"
     testCompile 'com.github.groovy-wslite:groovy-wslite:1.1.2'
     testCompile "org.grails:grails-test-mixins:3.3.0"
@@ -84,6 +92,7 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 }
+
 
 bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
@@ -107,6 +116,17 @@ assets {
 
 task wrapper(type: Wrapper) {
     gradleVersion = gradleWrapperVersion
+}
+
+task npmLint(type: NpmTask) {
+    args = ['run', 'lint']
+}
+
+test.dependsOn npmLint
+
+node {
+    version = '8.9.4'
+    workDir = file("${project.buildDir}/nodejs")
 }
 
 test {

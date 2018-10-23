@@ -58,7 +58,7 @@
 		            </sec:ifLoggedIn>
 		            <sec:ifNotLoggedIn>
  						<li class="nav-item text-white-50">
- 							<a class="nav-link pull-right" data-toggle="modal" data-target="#signInBox"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+ 							<a class="nav-link pull-right" data-toggle="modal" data-target="#signInBox" href="/login/auth"><span class="glyphicon glyphicon-log-in"></span> Login</a>
  						</li>
  		            </sec:ifNotLoggedIn>
 		          </ul>

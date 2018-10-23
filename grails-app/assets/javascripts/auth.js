@@ -17,8 +17,7 @@
                 dataType: 'JSON',
                 success: function(json, textStatus, jqXHR) {
                     if (json.success) {
-                        form[0].reset();
-                        loginButton.text('Sign In').removeClass('disabled');
+                        resetLoginForm();
                         location.reload(true);
                     } else if (json.error) {
                         $("#signInAlert").text(jqXHR.responseText).removeClass('hidden alert-info').addClass('alert-danger');
@@ -32,9 +31,18 @@
                     }
                 },
                 complete: function(jqXHR, textStatus) {
-                    loginButton.text('Sign In').removeClass('disabled');
+                    resetLoginButton();
                 }
             });
+
+            function resetLoginForm() {
+                form[0].reset();
+                resetLoginButton();
+            }
+
+            function resetLoginButton() {
+                loginButton.text('Sign In').removeClass('disabled');
+            }
         };
         loginButton.click(authAjax);
         $('input').focus(function() {
@@ -59,5 +67,14 @@
             });
         };
         $('#logout').click(logout);
+
+        function sendLogin(form) {
+            return $.ajax({
+                url: form.attr('action'),
+                method: 'POST',
+                data: form.serialize(),
+                dataType: 'JSON'
+            });
+        }
     });
 }(window.jQuery, window, document));

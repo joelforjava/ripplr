@@ -14,3 +14,4 @@ classes/
 out/
 logs
 icomoon-*
+node_modules
