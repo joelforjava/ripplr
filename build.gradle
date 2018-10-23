@@ -15,7 +15,6 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'war'
-    id 'jacoco'
     id "com.bertramlabs.asset-pipeline" version "3.0.2"
     id "com.moowork.node" version "1.1.1"
 }
@@ -26,6 +25,7 @@ group "ripplr.grails3"
 apply plugin:"org.grails.grails-web"
 apply plugin:"org.grails.grails-gsp"
 apply from: "${project.projectDir}/gradle/quality.gradle"
+apply from: "${project.projectDir}/gradle/coverage.gradle"
 
 def elasticsearchVersion = '5.4.1'
 
@@ -128,22 +128,3 @@ node {
     version = '8.9.4'
     workDir = file("${project.buildDir}/nodejs")
 }
-
-test {
-    jacoco {
-        append = false
-        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-        classDumpFile = file("$buildDir/jacoco/classpathdumps")
-    }
-}
-
-jacocoTestReport {
-    executionData integrationTest, test
-    reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination "${buildDir}/jacocoHtml"
-    }
-}
-
-jacocoTestReport.dependsOn test, integrationTest
