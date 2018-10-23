@@ -15,7 +15,6 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'war'
-    id 'codenarc'
     id 'jacoco'
     id "com.bertramlabs.asset-pipeline" version "3.0.2"
     id "com.moowork.node" version "1.1.1"
@@ -26,6 +25,7 @@ group "ripplr.grails3"
 
 apply plugin:"org.grails.grails-web"
 apply plugin:"org.grails.grails-gsp"
+apply from: "${project.projectDir}/gradle/quality.gradle"
 
 def elasticsearchVersion = '5.4.1'
 
@@ -147,20 +147,3 @@ jacocoTestReport {
 }
 
 jacocoTestReport.dependsOn test, integrationTest
-
-codenarc {
-    toolVersion = "1.1"
-    reportsDir = file("${reporting.baseDir}/build")
-    configFile = file("config/codenarc/codenarc.groovy")
-    ignoreFailures = true
-}
-/*
-codenarcMain {
-}
-codenarcIntegrationTest {
-    configFile = file("src/test/config/codenarc/codenarcIntegrationTest.groovy")
-}
-codenarcTest {
-    configFile = file("src/test/config/codenarc/codenarcIntegrationTest.groovy")
-}
-*/

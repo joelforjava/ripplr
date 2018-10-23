@@ -1,0 +1,19 @@
+
+apply plugin: 'codenarc'
+
+codenarc {
+    toolVersion = "1.1"
+    reportsDir = file("${reporting.baseDir}/build")
+    configFile = file("${project.projectDir}/config/codenarc/codenarc.groovy")
+    ignoreFailures = true
+}
+/*
+codenarcMain {
+}
+codenarcIntegrationTest {
+    configFile = file("src/test/config/codenarc/codenarcIntegrationTest.groovy")
+}
+codenarcTest {
+    configFile = file("src/test/config/codenarc/codenarcIntegrationTest.groovy")
+}
+*/
