@@ -1,12 +1,17 @@
 package com.joelforjava.ripplr
 
-import spock.lang.Ignore
+import com.joelforjava.ripplr.util.ServerUtils
+import grails.testing.mixin.integration.Integration
+import grails.transaction.Rollback
+import spock.lang.Requires
 import spock.lang.Shared
 import spock.lang.Specification
 import wslite.rest.ContentType
 import wslite.rest.RESTClient
 
-@Ignore('Ignoring since we have to manually start the server each round of testing.')
+@Integration
+@Rollback
+@Requires({ ServerUtils.isOnline() })
 class RippleFunctionalSpec extends Specification {
 
     @Shared

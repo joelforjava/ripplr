@@ -1,31 +1,25 @@
 package com.joelforjava.ripplr
 
-import spock.lang.Ignore
-import spock.lang.Shared
-import spock.lang.Specification
-import wslite.http.auth.HTTPBasicAuthorization
-import wslite.rest.ContentType
-import wslite.rest.RESTClient
+import com.joelforjava.ripplr.page.LoginPage
+import com.joelforjava.ripplr.page.TimelinePage
+import com.joelforjava.ripplr.util.ServerUtils as AppServer
+import geb.spock.GebSpec
+import grails.testing.mixin.integration.Integration
+import spock.lang.Requires
 
-@Ignore('Currently does not work. Intended to be replaced with a Login GebSpec')
-class LoginFunctionalSpec extends Specification {
+@Integration
+@Requires({ AppServer.isOnline() })
+class LoginFunctionalSpec extends GebSpec {
 
-    @Shared
-    def restClient = new RESTClient('http://localhost:8080/')
+    void 'Logging in directly from the login URL will redirect you to the timeline'() {
+        given: 'We navigate to the login page'
+        to LoginPage
 
-    def setup() {
-        restClient.httpClient.sslTrustAllCerts = true
-    }
+        when: 'We login'
+        login('jezza', 'topgear')
 
-    void 'Logging in via the login form'() {
-        when: 'I send a GET to the ripples URL requesting JSON'
-        restClient.authorization = new HTTPBasicAuthorization('jezza', 'topgear')
-        def response = restClient.post(path: '/login/auth', accept: ContentType.JSON)
+        then: 'We are at the timeline page'
+        at TimelinePage
 
-        then: 'I am redirected to the login URL'
-        response.url
-        response.url.toString() == 'http://localhost:8080/login/auth'
-
-        // TODO - simulate a login session and get Ripples
     }
 }
