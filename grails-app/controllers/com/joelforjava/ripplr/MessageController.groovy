@@ -55,8 +55,8 @@ class MessageController {
                 flash.message = messageSource.getMessage('default.created.message', [msg, message.id] as Object[], 'Message sent', request.locale)
                 redirect(action: 'index')
             }
-            // TODO - this will need to change. This invokes show, which will cause the message to be marked as read
-            '*' { respond message, [status: HttpStatus.CREATED] }
+
+            '*' { render status: HttpStatus.CREATED }
         }
     }
 

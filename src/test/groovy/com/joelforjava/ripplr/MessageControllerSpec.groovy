@@ -110,8 +110,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
         then: 'The message is saved (sent)'
         status == 201
-        model.message
-        model.message.dateSent
     }
 
     void 'Saving a valid message using a form'() {

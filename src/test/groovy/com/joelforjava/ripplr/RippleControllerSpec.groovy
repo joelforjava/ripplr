@@ -194,6 +194,11 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
         and: 'We have validated it'
         cmd.validate()
 
+		and:
+		response.reset()
+		request.contentType = FORM_CONTENT_TYPE
+		request.method = 'POST'
+
         when: 'We call save'
         controller.save(cmd)
 
@@ -262,6 +267,55 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
         then: 'We get the expected return status'
         status == 201
 
+    }
+
+    void 'Saving a null ripple via json is not permitted'() {
+        given: 'An empty command object'
+        def cmd = emptyRippleSaveCommand()
+
+        and: 'We have validated it'
+        cmd.validate()
+
+        and:
+        response.reset()
+        request.contentType = JSON_CONTENT_TYPE
+        request.method = 'POST'
+
+        when: 'We call save'
+        controller.save(cmd)
+
+        then: 'We get the expected results'
+        status == 400
+    }
+
+    void 'Saving a ripple via JSON when the service causes an exception results in an error message'() {
+        given: 'A valid save command object'
+        def cmd = validRippleSaveCommand()
+
+        and: 'A mocked ripple object'
+        def ripple = validRipple()
+
+        and: 'A properly mocked security service'
+        controller.springSecurityService = Mock(SpringSecurityService) {
+            1 * getCurrentUser() >> ripple.user
+        }
+
+        and: 'A properly mocked rippleService'
+        controller.rippleService = Mock(RippleService) {
+            1 * createRipple(*_) >> { throw new RippleException(message:  "Invalid content") }
+        }
+
+        and:
+        response.reset()
+        request.contentType = JSON_CONTENT_TYPE
+        request.method = 'POST'
+
+        when: 'The save action is invoked'
+        controller.save(cmd)
+
+        then: "we get a message from the exception"
+        status == 422
+        flash.message ==~ /.*Invalid.*/
     }
 
 }
