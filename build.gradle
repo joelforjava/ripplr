@@ -15,7 +15,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'war'
-    id "com.bertramlabs.asset-pipeline" version "3.0.2"
+    id "com.bertramlabs.asset-pipeline" version "3.0.10"
     id "com.moowork.node" version "1.2.0"
 }
 
@@ -77,7 +77,7 @@ dependencies {
     console "org.grails:grails-console"
     profile "org.grails.profiles:web"
     runtime "org.glassfish.web:el-impl:2.1.2-b03"
-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.8"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:3.0.10"
     runtime "com.h2database:h2"
     runtime group: 'mysql', name: 'mysql-connector-java', version: '8.0.12'
 
@@ -122,7 +122,7 @@ task npmLint(type: NpmTask) {
     args = ['run', 'lint']
 }
 
-test.dependsOn npmLint
+//test.dependsOn npmLint
 
 node {
     version = '8.9.4'
