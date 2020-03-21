@@ -122,9 +122,11 @@ task npmLint(type: NpmTask) {
     args = ['run', 'lint']
 }
 
-//test.dependsOn npmLint
+npmLint.dependsOn npmInstall
+test.dependsOn npmLint
 
 node {
     version = '8.9.4'
     workDir = file("${project.buildDir}/nodejs")
+    download = true
 }
