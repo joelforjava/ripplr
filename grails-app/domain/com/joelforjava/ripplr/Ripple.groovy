@@ -10,6 +10,8 @@ class Ripple {
 	String content
 	Date dateCreated
 
+	// TODO: Should a Ripple be aware that it is a response/re-post/etc.?
+
 	static belongsTo = [ user: User ]
 	static hasMany = [ tags: Tag, responses: Response, reposts: Repost ]
 	static mappedBy = [ responses: 'inResponseTo', reposts: 'original' ]
