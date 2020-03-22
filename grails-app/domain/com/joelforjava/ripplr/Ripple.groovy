@@ -11,7 +11,8 @@ class Ripple {
 	Date dateCreated
 
 	static belongsTo = [ user: User ]
-	static hasMany = [ tags: Tag ]
+	static hasMany = [ tags: Tag, responses: Response, reposts: Repost ]
+	static mappedBy = [ responses: 'inResponseTo', reposts: 'original' ]
 
     static constraints = {
     	content blank: false

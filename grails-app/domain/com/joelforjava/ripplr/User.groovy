@@ -47,7 +47,13 @@ class User implements Serializable {
 	}
 
 	static hasOne = [ profile: Profile ]
-	static hasMany = [ ripples: Ripple, tags: Tag, following: User, blocking: User, sentMessages: Message, receivedMessages: Message ]
+	static hasMany = [ ripples: Ripple,
+					   reposts: Repost,
+					   tags: Tag,
+					   following: User,
+					   blocking: User,
+					   sentMessages: Message,
+					   receivedMessages: Message ]
 	static mappedBy = [ receivedMessages: 'recipient', sentMessages: 'sender' ]
 
 	static transients = ['springSecurityService']
