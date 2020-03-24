@@ -1,7 +1,7 @@
 (function($, window, document) {
     $(function() {
-        var $addTopicBtn = $("#addTopicBtn");
-        var $topicContent = $("#topicContent");
+        const $addTopicBtn = $("#addTopicBtn");
+        const $topicContent = $("#topicContent");
         $addTopicBtn.click(function() {
             showSpinner(true);
             $topicContent.fadeTo("fast", 0.4);
@@ -27,6 +27,37 @@
             });
             return false;
         });
+        const $replyButtons = $(".reply-button");
+        $replyButtons.each(function(index) {
+            const inReplyTo = $(this).data('in-reply-to-button');
+            console.log("This button is to reply to Ripple number: " + inReplyTo);
+            $(this).click(function() {
+                const $inReplyToSection = $(`*[data-in-reply-to-id="${inReplyTo}"]`);
+                $inReplyToSection.slideToggle();
+                $inReplyToSection.find('button').click(function() {
+                    console.debug($(this).parents('form:first'));
+                    $.ajax({
+                        type:'POST',
+                        data:$(this).parents('form:first').serialize(),
+                        url:'/response/save',
+                        success: function(data,textStatus){
+                            if (textStatus === 'success') {
+                                $('#allTopics').html(data);
+                                clearTopic(data);
+                            }
+                        },
+                        error: function(XMLHttpRequest,textStatus,errorThrown){
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                        },
+                        complete: function(XMLHttpRequest,textStatus){
+                            $inReplyToSection.slideToggle();
+                        }
+                    });
+                    return false;
+                });
+            });
+        });
     });
 
     function clearTopic(e) {
@@ -44,4 +75,4 @@
         }
     }
 
-}(window.jQuery, window, document));
+}(window.jQuery, window, document));;
