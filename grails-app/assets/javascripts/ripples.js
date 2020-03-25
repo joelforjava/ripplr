@@ -58,6 +58,14 @@
                 });
             });
         });
+        const $showResponsesButtons = $('.show-responses-button');
+        $showResponsesButtons.each(function(index) {
+            const responsesTo = $(this).data('responses-to-button');
+            $(this).click(function() {
+                const $repliesSection = $(`*[data-responses-to-id="${responsesTo}"]`);
+                $repliesSection.slideToggle();
+            });
+        });
     });
 
     function clearTopic(e) {

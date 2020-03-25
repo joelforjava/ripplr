@@ -13,7 +13,7 @@ class ResponseController {
 
     def index() { }
 
-    def save(Ripple inResponseTo, String content) {
+    def save(int inResponseTo, String content) {
         def user = springSecurityService.currentUser
 
         // A lot of this was taken from the RippleController. Should probably find a way to refactor common logic
@@ -21,8 +21,9 @@ class ResponseController {
         try {
             // TODO: Create service method to create a new Response
             def newRipple = rippleService.createRipple user.username, content
-            def response = new Response(inResponseTo: inResponseTo, ripple: newRipple)
-            response.save(flush: true)
+            def original = Ripple.findById inResponseTo
+            def response = new Response(inResponseTo: original, ripple: newRipple)
+            response.save(flush: true, failOnError: true)
             params.sort = 'dateCreated'
             params.order = 'desc'
             params.max = 10
