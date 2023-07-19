@@ -13,7 +13,7 @@ class ResponseController {
 
     def index() { }
 
-    def save(int inResponseTo, String content) {
+    def save(inResponseTo, String content) {
         def user = springSecurityService.currentUser
 
         // A lot of this was taken from the RippleController. Should probably find a way to refactor common logic

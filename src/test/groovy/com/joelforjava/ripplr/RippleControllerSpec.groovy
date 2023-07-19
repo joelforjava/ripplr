@@ -181,10 +181,11 @@ class RippleControllerSpec extends Specification implements ControllerUnitTest<R
 
         and: 'We get the HTML as expected'
         // issues with 'rip' tags being unbound will not allow use of response.xml
+//        assert response.text == 'Valid content'
         def xmlSlurper = new XmlSlurper(false, false)
         def resultHtml = xmlSlurper.parseText(response.text)
-        resultHtml.@class ==~ /.*topicEntry.*/
-        resultHtml.div[0].div[0].div[1].h4.text() ==~ /.*${ripple.user.username}.*/
+        resultHtml.div[0].@class ==~ /.*topicEntry.*/
+        resultHtml.div[0].div[0].div[0].div[1].h4.text() ==~ /.*${ripple.user.username}.*/
     }
 
     void 'Saving a null ripple via a form is not permitted'() {
