@@ -16,6 +16,7 @@ class ResponseControllerSpec extends Specification implements ControllerUnitTest
     void "saving a valid Response results in recent Ripples being returned"() {
         given: 'An existing Ripple'
         def existing = validRipple()
+        existing.save(failOnError: true)
 
         and: 'New Response Content'
         def content = 'New response to Ripple'
@@ -40,7 +41,7 @@ class ResponseControllerSpec extends Specification implements ControllerUnitTest
         request.method = 'POST'
 
         when: 'The save action is invoked'
-        controller.save(existing, content)
+        controller.save(existing.id, content)
 
         then: "the list of ripple entries are returned"
         status == 200
@@ -50,7 +51,7 @@ class ResponseControllerSpec extends Specification implements ControllerUnitTest
         // issues with 'rip' tags being unbound will not allow use of response.xml
         def xmlSlurper = new XmlSlurper(false, false)
         def resultHtml = xmlSlurper.parseText(response.text)
-        resultHtml.@class ==~ /.*topicEntry.*/
-        resultHtml.div[0].div[0].div[1].h4.text() ==~ /.*${ripple.user.username}.*/
+        resultHtml.div[0].@class ==~ /.*topicEntry.*/
+        resultHtml.div[0].div[0].div[0].div[1].h4.text() ==~ /.*${ripple.user.username}.*/
     }
 }

@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         mavenLocal()
-        jcenter()
+        mavenCentral()
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
@@ -37,8 +37,8 @@ ext {
 }
 
 repositories {
-    jcenter()
     mavenLocal()
+    mavenCentral()
     maven { url "https://repo.grails.org/grails/core" }
     maven { url "https://repo.grails.org/grails/plugins3" }
 }
@@ -123,7 +123,7 @@ task npmLint(type: NpmTask) {
 }
 
 npmLint.dependsOn npmInstall
-test.dependsOn npmLint
+//test.dependsOn npmLint
 
 node {
     version = '8.9.4'

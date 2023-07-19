@@ -35,6 +35,6 @@ trait DomainDataFactory {
     }
 
     Ripple validRipple() {
-        new Ripple(content: 'Valid content', user: validUser())
+        new Ripple(content: 'Valid content', user: validUser(), id: 1000)
     }
 }

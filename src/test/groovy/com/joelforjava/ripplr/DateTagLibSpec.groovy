@@ -23,8 +23,8 @@ class DateTagLibSpec extends Specification {
     	where:
     	testName		       | testDate						 | expectedTimeAgo
     	"Current Time"         | new Date()						 | "Right Now"
-    	"Now - 1 day"          | new Date().minus(1) 			 | "1 day ago"
-    	"Now - 2 days"         | new Date().minus(2) 		  	 | "2 days ago"
+    	"Now - 1 day"          | new Date() - 1                  | "1 day ago"
+    	"Now - 2 days"         | new Date() - 2                  | "2 days ago"
     	"1 minute ago"         | 1.minute.ago          			 | "1 minute ago"
     	"2 minutes ago"        | 2.minutes.ago         			 | "2 minutes ago"
     	"1 hour ago"    	   | 1.hour.ago            			 | "1 hour ago"
