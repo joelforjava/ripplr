@@ -1,7 +1,7 @@
 package com.joelforjava.ripplr
 
 import grails.testing.mixin.integration.Integration
-import grails.transaction.*
+import grails.gorm.transactions.*
 import spock.lang.Specification
 
 @Integration

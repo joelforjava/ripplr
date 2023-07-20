@@ -23,10 +23,12 @@ if (Environment.isDevelopmentMode() && targetDir) {
         }
     }
     logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
+    logger("grails.plugins.elasticsearch", DEBUG, ['STDOUT'], false)
+    logger 'org.elasticsearch', DEBUG, ['STDOUT'], false
 }
 
 logger 'com.joelforjava.ripplr', DEBUG, ['STDOUT'], false
-logger 'grails.plugins.elasticsearch', WARN, ['STDOUT'], false
+//logger 'grails.plugins.elasticsearch', WARN, ['STDOUT'], false
 logger 'org.elasticsearch', WARN, ['STDOUT'], false
 
 root(ERROR, ['STDOUT'])

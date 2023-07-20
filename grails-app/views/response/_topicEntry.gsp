@@ -1,5 +1,5 @@
 <div>
-	{% Not sure if this should match the standard ripple template, but will leave for now. %}
+	<%-- Not sure if this should match the standard ripple template, but will leave for now. --%>
     <div class="topicEntry card mb-4">
         <div class="topicText card-body">
             <div class="media">

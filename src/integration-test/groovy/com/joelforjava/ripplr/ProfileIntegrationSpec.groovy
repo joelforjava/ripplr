@@ -1,7 +1,7 @@
 package com.joelforjava.ripplr
 
-import grails.test.mixin.integration.Integration
-import grails.transaction.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
 import spock.lang.Specification
 import org.apache.commons.logging.LogFactory
 
