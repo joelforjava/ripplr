@@ -1,17 +1,13 @@
 package com.joelforjava.ripplr
 
-import grails.test.mixin.TestFor
+import grails.testing.web.taglib.TagLibUnitTest
 import groovy.time.TimeCategory
 import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.mop.Use
 
-/**
- * See the API for {@link grails.test.mixin.web.GroovyPageUnitTestMixin} for usage instructions
- */
 @Use(TimeCategory)
-@TestFor(DateTagLib)
-class DateTagLibSpec extends Specification {
+class DateTagLibSpec extends Specification implements TagLibUnitTest<DateTagLib> {
 
 
 	@Unroll
