@@ -22,8 +22,8 @@ class Ripple {
 
     static searchable = {
 		content boost: 2.0
-//    	user parent: true, reference: true
-		tags component: true
+		user component: true
+//		tags component: true
     	//spellCheck "include"
     }
 
