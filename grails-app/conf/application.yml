@@ -1,5 +1,6 @@
 ---
 hibernate:
+    #allow_update_outside_transaction: true
     cache:
         queries: false
         use_second_level_cache: true
@@ -13,6 +14,9 @@ dataSource:
     username: sa
     password: ''
 
+# NOTE: with the below configuration, if there is test data that is not regenerated, it'll remain in ES!
+#       Examples: Any test ripples created from within the application itself are orphaned.
+# Also, is there a way to use Testcontainers for a dev service?
 elasticSearch:
     plugin:
         mapperAttachment:

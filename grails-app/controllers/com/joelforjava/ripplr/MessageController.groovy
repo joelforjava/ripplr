@@ -25,7 +25,13 @@ class MessageController {
             return
         }
 
-        respond messageService.markRead(id)
+        // TODO - using markRead here causes `TransactionRequiredException: no transaction is in progress`.
+        //        and I'm not sure why. You could use this method if hibernate.allow_update_outside_transaction
+        //        is set to true, but I'd rather not use it if Hibernate is moving toward enforcing transactions.
+        //        More here: https://github.com/grails/grails-core/issues/11376, but it really doesn't provide
+        //        much insight. The markRead logic needs to be fleshed out anyway and should probably be a
+        //        separate call.
+        respond messageService.load(id)
     }
 
     def create() {
