@@ -1,5 +1,6 @@
 package com.joelforjava.ripplr
 
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
@@ -13,6 +14,7 @@ class ResponseController {
 
     def index() { }
 
+    @Transactional
     def save(Long inResponseTo, String content) {
         def user = springSecurityService.currentUser
 
@@ -23,7 +25,7 @@ class ResponseController {
             def newRipple = rippleService.createRipple user.username, content
             def original = Ripple.findById inResponseTo
             def response = new Response(inResponseTo: original, ripple: newRipple)
-            response.save(failOnError: true)
+            response.save(flush: true, failOnError: true)
             params.sort = 'dateCreated'
             params.order = 'desc'
             params.max = 10
