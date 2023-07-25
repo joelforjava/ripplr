@@ -1,5 +1,6 @@
 package com.joelforjava.ripplr
 
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
@@ -13,7 +14,8 @@ class ResponseController {
 
     def index() { }
 
-    def save(inResponseTo, String content) {
+    @Transactional
+    def save(Long inResponseTo, String content) {
         def user = springSecurityService.currentUser
 
         // A lot of this was taken from the RippleController. Should probably find a way to refactor common logic

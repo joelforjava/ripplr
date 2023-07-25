@@ -1,17 +1,13 @@
 package com.joelforjava.ripplr
 
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Ignore
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@TestFor(UserRestController)
-@Mock([User, UserRole, Profile])
-class UserRestControllerSpec extends Specification {
+//@Mock([User, UserRole, Profile])
+class UserRestControllerSpec extends Specification implements ControllerUnitTest<UserRestController>, DomainUnitTest<User> {
 
     def setup() {
     }

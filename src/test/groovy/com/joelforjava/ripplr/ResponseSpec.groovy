@@ -1,13 +1,9 @@
 package com.joelforjava.ripplr
 
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
- */
-@TestFor(Response)
-class ResponseSpec extends Specification {
+class ResponseSpec extends Specification implements DomainUnitTest<Response> {
 
     def setup() {
     }

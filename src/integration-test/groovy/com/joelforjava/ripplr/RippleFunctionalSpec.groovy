@@ -2,7 +2,7 @@ package com.joelforjava.ripplr
 
 import com.joelforjava.ripplr.util.ServerUtils
 import grails.testing.mixin.integration.Integration
-import grails.transaction.Rollback
+import grails.gorm.transactions.Rollback
 import spock.lang.Requires
 import spock.lang.Shared
 import spock.lang.Specification

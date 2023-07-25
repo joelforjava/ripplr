@@ -1,16 +1,12 @@
 package com.joelforjava.ripplr
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@TestFor(ImageController)
-@Mock([User, Profile])
-class ImageControllerSpec extends Specification {
+//@Mock([User, Profile])
+class ImageControllerSpec extends Specification implements ControllerUnitTest<ImageController>, DomainUnitTest<User> {
 
     def setup() {
     }
@@ -31,7 +27,7 @@ class ImageControllerSpec extends Specification {
     	controller.springSecurityService = mockSecurityService
 */
     	and: "a property configured and mocked command object"
-        ImageUploadCommand iuc = mockCommandObject ImageUploadCommand
+        ImageUploadCommand iuc = new ImageUploadCommand()
         iuc.type = ImageType.PROFILE
         iuc.photo = populateMultipartFile 'filename.jpeg', [1, 0, 1] as byte[]
         iuc.username = existingUser.username

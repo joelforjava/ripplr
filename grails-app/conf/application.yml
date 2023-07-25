@@ -1,5 +1,6 @@
 ---
 hibernate:
+    #allow_update_outside_transaction: true
     cache:
         queries: false
         use_second_level_cache: true
@@ -13,10 +14,19 @@ dataSource:
     username: sa
     password: ''
 
+# NOTE: with the below configuration, if there is test data that is not regenerated, it'll remain in ES!
+#       Examples: Any test ripples created from within the application itself are orphaned.
+# Also, is there a way to use Testcontainers for a dev service?
 elasticSearch:
     plugin:
         mapperAttachment:
             enabled: false
+    datastoreImpl: hibernateDatastore
+    client:
+        mode: transport
+        hosts:
+        - {host: es.joelforjava.local, port: 9200}
+    defaultExcludedProperties: ['password', 'passwordHash', 'passwordExpired', 'accountExpired', 'accountLocked']
 
 environments:
     development:
@@ -24,18 +34,17 @@ environments:
             dbCreate: create-drop
             url: jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
         elasticSearch:
-            client:
-                mode: local
-            datastoreImpl: hibernateDatastore
+            migration:
+                strategy: 'deleteIndex'
+                #aliasReplacesIndex: true
 
     test:
         dataSource:
             dbCreate: update
             url: jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
         elasticSearch:
-            client:
-                mode: local
-            datastoreImpl: hibernateDatastore
+            migration:
+                strategy: 'deleteIndex'
     production:
         dataSource:
             dbCreate: update
@@ -80,17 +89,26 @@ info:
         version: '@info.app.version@'
         grailsVersion: '@info.app.grailsVersion@'
 spring:
+    jmx:
+        enabled: true
+        unique-names: true
     main:
         banner-mode: "off"
     groovy:
         template:
             check-template-location: false
-
-# Spring Actuator Endpoints are Disabled by Default
-endpoints:
-    enabled: false
-    jmx:
-        enabled: true
+    devtools:
+        restart:
+            additional-exclude:
+                - '*.gsp'
+                - '**/*.gsp'
+                - '*.gson'
+                - '**/*.gson'
+                - 'logback.groovy'
+                - '*.properties'
+management:
+    endpoints:
+        enabled-by-default: false
 
 ---
 grails:
@@ -144,6 +162,7 @@ grails:
                 scriptlets: html
                 taglib: none
                 staticparts: none
-endpoints:
-    jmx:
-        unique-names: true
+management:
+    endpoints:
+        jmx:
+            unique-names: true

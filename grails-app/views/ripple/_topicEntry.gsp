@@ -1,5 +1,5 @@
 <div>
-	{% Not the biggest fan of the surrounding div, but this isn't exactly world-class design at this point %}
+	<%-- Not the biggest fan of the surrounding div, but this isn't exactly world-class design at this point --%>
     <div class="topicEntry card mb-4">
         <div class="topicText card-body">
             <div class="media">

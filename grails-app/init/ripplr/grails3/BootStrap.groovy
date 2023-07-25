@@ -25,7 +25,7 @@ class BootStrap {
     	jezza.addToRipples(new Ripple(content:"Tenderloin leberkas chuck, swine tail ham hamburger brisket excepteur ea ex non fugiat"))
     	jezza.addToRipples(new Ripple(content:"Turducken excepteur hamburger nostrud sed"))
     	jezza.addToRipples(new Ripple(content:"Chuck in ut meatball ground round cow fatback"))
-    	jezza.save()
+    	jezza.save(failOnError: true)
 
     	println "User jezza created with ${jezza.ripples.size()} Ripples"
 
@@ -37,7 +37,7 @@ class BootStrap {
     	jamesmay.addToRipples(new Ripple(content:"prosciutto voluptate bresaola magna exercitation meatball dolore sunt"))
     	jamesmay.addToRipples(new Ripple(content:"drumstick proident elit minim tri-tip hamburger laborum do sausage est non"))
     	jamesmay.addToRipples(new Ripple(content:"Pastrami porchetta bresaola cupim brisket fatback shankle ea aliquip andouille"))
-    	jamesmay.save()
+    	jamesmay.save(failOnError: true)
 
     	println "User jamesmay created with ${jamesmay.ripples.size()} Ripples"
 
@@ -53,7 +53,7 @@ class BootStrap {
 		hammond.addToSentMessages(new Message(recipient: jezza, dateSent: new Date(), subject: 'No Subject', content: "brisket drumstick"))
 		hammond.addToSentMessages(new Message(recipient: jezza, dateSent: new Date(), subject: 'Last One', content: "hamburger hamburger cow"))
 		hammond.addToSentMessages(new Message(recipient: jamesmay, dateSent: new Date(), subject: 'A Message', content: "hamburger hamburger cow meatballs"))
-    	hammond.save()
+    	hammond.save(failOnError: true)
 
     	println "User hammond created with ${hammond.ripples.size()} Ripples"
 
@@ -67,7 +67,7 @@ class BootStrap {
 		def user = new User(username: username, passwordHash: passwordHash,
 				accountLocked: accountLocked, accountExpired: accountExpired,
 				passwordExpired: passwordExpired)
-		user.save()
+//		user.save()
 		user
 	}
 

@@ -34,7 +34,7 @@ class SearchController {
             log.debug "Here are the highlighted: ${highlighted}"
             searchResult?.searchResults?.eachWithIndex { hit, index ->
                 def fragments = highlighted[index].content?.fragments
-                log.debug fragments?.size() ? fragments[0] : ''
+                log.debug fragments?.size() ? "${fragments[0]}" : ''
             }
             /* */
 
@@ -45,7 +45,7 @@ class SearchController {
                 '*' { render searchResult as JSON }
             }
         } catch (e) {
-            log.error(e)
+            log.error "An error! ${e}"
             internalError()
         }
     }

@@ -74,7 +74,6 @@ class User implements Serializable {
 
 	static searchable = {
 		only = ["username"]
-		ripples component: true
 	}
 
 }

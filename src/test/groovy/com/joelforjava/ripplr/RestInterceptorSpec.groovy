@@ -1,14 +1,10 @@
 package com.joelforjava.ripplr
 
 
-import grails.test.mixin.TestFor
+import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@TestFor(RestInterceptor)
-class RestInterceptorSpec extends Specification {
+class RestInterceptorSpec extends Specification implements InterceptorUnitTest<RestInterceptor> {
 
     void "Test rest interceptor matching"() {
         when:"A request matches the interceptor"
