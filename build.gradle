@@ -51,13 +51,6 @@ configurations {
     }
 }
 
-//dependencyManagement {
-//    imports {
-//        mavenBom "org.grails:grails-bom:$grailsVersion"
-//    }
-//    applyMavenExclusions false
-//}
-
 dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     compile "org.springframework.boot:spring-boot-starter-logging"
@@ -66,7 +59,6 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.boot:spring-boot-starter-tomcat"
     compile 'org.grails.plugins:spring-security-core:4.0.1'
-    // compile "org.grails:grails-dependencies"
     compile "org.codehaus.groovy:groovy-dateutil:2.5.14"
     compile "org.grails:grails-web-boot"
     compile "org.grails:grails-logging"
@@ -96,8 +88,6 @@ dependencies {
     runtime "org.apache.tomcat:tomcat-jdbc"
     runtime "javax.xml.bind:jaxb-api:2.3.1"
     testCompile 'com.github.groovy-wslite:groovy-wslite:1.1.2'
-    // testCompile "org.grails:grails-test-mixins:3.3.0"
-    // testCompile "org.grails:grails-plugin-testing"
     testCompile "io.micronaut:micronaut-inject-groovy"
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.mockito:mockito-core"
