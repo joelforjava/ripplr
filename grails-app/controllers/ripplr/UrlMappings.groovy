@@ -1,4 +1,4 @@
-package ripplr.grails3
+package ripplr
 
 class UrlMappings {
 

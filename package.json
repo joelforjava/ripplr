@@ -1,5 +1,5 @@
 {
-  "name": "ripplr.grails3",
+  "name": "ripplr",
   "version": "0.1.0",
   "scripts": {
     "test": "NODE_PATH=grails-app/assets/javascripts mocha --compilers es6:babel-register \"src/test/javascript/**/*.es6\"",
