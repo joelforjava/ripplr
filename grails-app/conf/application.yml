@@ -77,7 +77,7 @@ environments:
 grails:
     profile: web
     codegen:
-        defaultPackage: ripplr.grails3
+        defaultPackage: ripplr
     gorm:
         reactor:
             # Whether to translate GORM events into Reactor events

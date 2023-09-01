@@ -1,4 +1,4 @@
-package ripplr.grails3
+package ripplr
 
 import com.joelforjava.ripplr.*
 

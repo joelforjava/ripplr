@@ -1,4 +1,4 @@
-package ripplr.grails3
+package ripplr
 
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration

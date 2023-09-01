@@ -1,4 +1,4 @@
-# Ripplr (Grails 3 Version)
+# Ripplr
 
 Ripplr is a Twitter-like application based on the Hubub project that was used in the [Grails In Action](https://www.manning.com/books/grails-in-action-second-edition)
 book published by Manning Publications.
